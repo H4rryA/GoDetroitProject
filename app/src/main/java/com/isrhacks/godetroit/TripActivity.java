@@ -19,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.OptionalPendingResult;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -28,9 +29,8 @@ import java.util.Locale;
 public class TripActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, TimePickerDialog.OnTimeSetListener, AdapterView.OnItemSelectedListener{
         private final int RC_SIGN_IN = 9001;
 
-        String currentTime;
-        TextView timeText;
         String tripTime;
+        TextView timeText;
         String spinner_choice;
         GoogleApiClient mGoogleApiClient;
 
@@ -53,19 +53,18 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
                     .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
                     .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                     .build();
-            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-            startActivityForResult(signInIntent, RC_SIGN_IN);
+            logIn();
 
             Calendar c = Calendar.getInstance();
             Date d = c.getTime();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddhh:mmZ", Locale.ENGLISH);
-            currentTime = sdf.format(d);
-            currentTime = currentTime.substring(0, 10) + "T" + currentTime.substring(10);
+            tripTime = sdf.format(d);
+            tripTime = tripTime.substring(0, 10) + "T" + tripTime.substring(10);
         }
 
         public void setTime(View view){
-            int hour = Integer.valueOf(currentTime.substring(11,13));
-            int minute = Integer.valueOf(currentTime.substring(14,16));
+            int hour = Integer.valueOf(tripTime.substring(11,13));
+            int minute = Integer.valueOf(tripTime.substring(14,16));
             new TimePickerDialog(this, this, hour, minute, true).show();
         }
 
@@ -81,7 +80,7 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
             }
             String time = hourString + ":" + minuteString;
             this.timeText.setText(time);
-            currentTime = currentTime.substring(0,11)+time+currentTime.substring(16);
+            tripTime = tripTime.substring(0,11)+time+tripTime.substring(16);
         }
 
         public void launchRoutes(View v){
@@ -100,11 +99,21 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
                 intent.putExtra("from", fromLocation);
                 intent.putExtra("to", toLocation);
                 intent.putExtra("time_constraint", spinner_choice);
-                tripTime = currentTime;
                 intent.putExtra("time", tripTime);
                 startActivity(intent);
             }
         }
+
+    private void logIn(){
+        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+        if(opr.isDone()){
+            GoogleSignInResult result = opr.get();
+            handleSignInResult(result);
+        }else {
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+        }
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -119,10 +128,9 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            System.out.println(acct.getDisplayName());
         } else {
-            // Signed out, show unauthenticated UI.
             System.out.println("Sign In Fail");
+            logIn();
         }
     }
     @Override
