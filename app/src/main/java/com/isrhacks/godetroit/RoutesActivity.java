@@ -164,7 +164,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                     LatLng start;
                     LatLng end;
                     String mode;
-
+                
 
                     JSONObject jsonStart = step.getJSONObject("start_location");
                     start = new LatLng(jsonStart.getDouble("lat"), jsonStart.getDouble("lng"));

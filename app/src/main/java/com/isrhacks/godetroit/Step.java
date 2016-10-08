@@ -15,7 +15,7 @@ public class Step
     public String startbus;
     public String endbus;
     public Polyline route;
-    public Step(LatLng start, LatLng end, String mode, Polyline route)
+    public Step(LatLng start, LatLng end, String mode)
     {
         this.start = start;
         this.end = end;
@@ -23,7 +23,7 @@ public class Step
         this.route = route;
     }
 
-    public Step(LatLng start, LatLng end, String mode, Polyline route, String startbus, String endbus)
+    public Step(LatLng start, LatLng end, String mode, String startbus, String endbus)
     {
         this.start = start;
         this.end = end;
