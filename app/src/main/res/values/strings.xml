@@ -1,4 +1,12 @@
 <resources>
     <string name="app_name">Go Detroit</string>
     <string name="title_activity_navigation">Navigation</string>
+    <string name="to_hint">Ex: The Capitol Building</string>
+    <string name="to_string">To:</string>
+    <string name="from_hint">Ex: 1600 Pennsylvania Avenue</string>
+    <string name="from_string">From:</string>
+    <string-array name="time_array">
+        <item>Depart By</item>
+        <item>Arrive By</item>
+    </string-array>
 </resources>

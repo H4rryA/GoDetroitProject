@@ -46,10 +46,10 @@ public class TripActivity extends AppCompatActivity implements TimePickerDialog.
         }
 
         public void launchRoutes(View v){
-         /*   Intent intent = new Intent(this, RoutesActivity.class);
+            Intent intent = new Intent(this, RoutesActivity.class);
             intent.putExtra("hour", tripHour);
             intent.putExtra("min", tripMin);
-            startActivity(intent);*/
+            startActivity(intent);
         }
 
 }
