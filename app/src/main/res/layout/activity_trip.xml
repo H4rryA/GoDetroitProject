@@ -25,6 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/from_hint"
+        android:id="@+id/from_input"
         android:textSize="20sp"/>
     </LinearLayout>
     <LinearLayout
@@ -43,6 +44,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/to_hint"
+        android:id="@+id/to_input"
         android:textSize="20sp"/>
     </LinearLayout>
     <LinearLayout
