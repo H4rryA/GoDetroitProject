@@ -4,6 +4,10 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +31,11 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     private GoogleMap mMap;
     private String fromLocation;
     private String toLocation;
+
+    RecyclerView recycler;
+    LinearLayoutManager layoutManager;
+    RouteAdapter routeAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +47,15 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        recycler = (RecyclerView) findViewById(R.id.routes_recycler);
+        recycler.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recycler.setLayoutManager(layoutManager);
+        String[] test = new String[] {"22N 5 min", "15 min", "50", "13N 4 min", "12 min", "75", "12W 3 min", "12 min", "100", "50E 15 min", "30 min", "80"};
+        routeAdapter = new RouteAdapter(test);
+        recycler.setAdapter(routeAdapter);
+
     }
 
 
