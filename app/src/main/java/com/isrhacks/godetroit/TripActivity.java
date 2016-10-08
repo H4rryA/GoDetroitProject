@@ -2,6 +2,7 @@ package com.isrhacks.godetroit;
 
 import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,32 +13,48 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-public class TripActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, AdapterView.OnItemSelectedListener{
+public class TripActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, TimePickerDialog.OnTimeSetListener, AdapterView.OnItemSelectedListener{
+        private final int RC_SIGN_IN = 9001;
 
         String currentTime;
         TextView timeText;
         String tripTime;
         String spinner_choice;
+        GoogleApiClient mGoogleApiClient;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_trip);
             Spinner spinner = (Spinner) findViewById(R.id.time_spinner);
-            // Create an ArrayAdapter using the string array and a default spinner layout
             ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                     R.array.time_array, android.R.layout.simple_spinner_item);
-            // Specify the layout to use when the list of choices appears
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            // Apply the adapter to the spinner
             spinner.setAdapter(adapter);
             ((Spinner) findViewById(R.id.time_spinner)).setOnItemSelectedListener(this);
             timeText = (TextView) findViewById(R.id.time_text);
+
+            GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestEmail()
+                    .build();
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .enableAutoManage(this /* FragmentActivity */, this /* OnConnectionFailedListener */)
+                    .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+                    .build();
+            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+            startActivityForResult(signInIntent, RC_SIGN_IN);
 
             Calendar c = Calendar.getInstance();
             Date d = c.getTime();
@@ -90,6 +107,25 @@ public class TripActivity extends AppCompatActivity implements TimePickerDialog.
         }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            handleSignInResult(result);
+        }
+    }
+
+    public void handleSignInResult(GoogleSignInResult result){
+        if (result.isSuccess()) {
+            // Signed in successfully, show authenticated UI.
+            GoogleSignInAccount acct = result.getSignInAccount();
+            System.out.println(acct.getDisplayName());
+        } else {
+            // Signed out, show unauthenticated UI.
+            System.out.println("Sign In Fail");
+        }
+    }
+    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         spinner_choice = parent.getItemAtPosition(position).toString();
     }
@@ -97,5 +133,10 @@ public class TripActivity extends AppCompatActivity implements TimePickerDialog.
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        System.out.println("Connection Failed");
     }
 }
