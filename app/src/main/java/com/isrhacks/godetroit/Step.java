@@ -14,23 +14,26 @@ public class Step
     public String mode;
     public String startbus;
     public String endbus;
+    public String polyline;
     public Polyline route;
-    public Step(LatLng start, LatLng end, String mode)
+    public Step(LatLng start, LatLng end, String mode, String polyline)
     {
         this.start = start;
         this.end = end;
         this.mode = mode;
-        this.route = route;
+//        this.route = route;
+        this.polyline = polyline;
     }
 
-    public Step(LatLng start, LatLng end, String mode, String startbus, String endbus)
+    public Step(LatLng start, LatLng end, String mode, String polyline, String startbus, String endbus)
     {
         this.start = start;
         this.end = end;
         this.mode = mode;
-        this.route = route;
+//        this.route = route;
         this.startbus = startbus;
         this.endbus = endbus;
+        this.polyline = polyline;
     }
 
     public String toString()

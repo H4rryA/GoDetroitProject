@@ -1,6 +1,7 @@
 package com.isrhacks.godetroit;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +14,9 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.android.PolyUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,6 +38,8 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     RecyclerView recycler;
     LinearLayoutManager layoutManager;
     RouteAdapter routeAdapter;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,9 +116,14 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         protected String doInBackground(String... urlStrings) {
             URL url;
             HttpURLConnection urlConnection = null;
-            String result = "null";
+            String result = "";
             try {
                 String urlstr = urlStrings[0];
+                if(urlstr.contains("https://maps.googleapis.com"))
+                {
+                    result += "map";
+                }
+                urlstr = urlstr.replace(" ", "+");
                 System.out.println(urlstr);
 //            String parameters = "?origin=75+9th+Ave+New+York,+NY&destination=MetLife+Stadium+1+MetLife+Stadium+Dr+East+Rutherford,+NJ+07073&mode=transit";
                 url = new URL(urlstr);
@@ -129,7 +140,8 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                 {
                     sb.append(line + "\n");
                 }
-                result = sb.toString();
+                result += sb.toString();
+//                System.out.println(result);
 
             }
             catch (Exception e) {
@@ -150,59 +162,65 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         }
 
         protected void onPostExecute(String result) {
-            System.out.println("JSON Parsing is now starting");
-            JSONObject jsonRoutes = null;
-            ArrayList<Step> stepsArr = new ArrayList<Step>();
-            try {
-                jsonRoutes = new JSONObject(result);
+            if(result.length() >= 3 && result.substring(0, 3).equals("map")) {
+                result = result.substring(3);
+                System.out.println("JSON Parsing is now starting");
+                System.out.println(result);
+                JSONObject jsonRoutes = null;
+                ArrayList<Step> stepsArr = new ArrayList<Step>();
+                try {
+                    jsonRoutes = new JSONObject(result);
 
-                JSONArray steps = jsonRoutes.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
-                //populate the steps array with all important information
-                for(int i = 0; i < steps.length(); i++)
-                {
-                    JSONObject step = steps.getJSONObject(i);
-                    LatLng start;
-                    LatLng end;
-                    String mode;
-                
+                    JSONArray steps = jsonRoutes.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
+                    //populate the steps array with all important information
+                    for (int i = 0; i < steps.length(); i++) {
+                        JSONObject step = steps.getJSONObject(i);
+                        LatLng start;
+                        LatLng end;
+                        String mode;
+                        String polylinePoints;
 
-                    JSONObject jsonStart = step.getJSONObject("start_location");
-                    start = new LatLng(jsonStart.getDouble("lat"), jsonStart.getDouble("lng"));
+                        polylinePoints = step.getJSONObject("polyline").getString("points");
+                        Polyline routeline = mMap.addPolyline(new PolylineOptions().addAll(PolyUtil.decode(polylinePoints)).width(5).color(Color.RED));
+                        JSONObject jsonStart = step.getJSONObject("start_location");
+                        start = new LatLng(jsonStart.getDouble("lat"), jsonStart.getDouble("lng"));
 
-                    JSONObject jsonEnd = step.getJSONObject("end_location");
-                    end = new LatLng(jsonEnd.getDouble("lat"), jsonEnd.getDouble("lng"));
-                    mode = step.getString("travel_mode");
+                        JSONObject jsonEnd = step.getJSONObject("end_location");
+                        end = new LatLng(jsonEnd.getDouble("lat"), jsonEnd.getDouble("lng"));
+                        mode = step.getString("travel_mode");
 
-                    if(mode.equals("TRANSIT"))
-                    {
-                        JSONObject transitDetails = step.getJSONObject("transit_details");
-                        JSONObject departureStopStop = transitDetails.getJSONObject("departure_stop");
-                        JSONObject endStop = transitDetails.getJSONObject("arrival_stop");
+                        new DirectionRequest().execute("http://GoDetroit-dev.us-east-1.elasticbeanstalk.com/crimes?lat=" + start.latitude + "&long=" + start.longitude + "&rad=" + 250);
 
-                        String startBus = departureStopStop.getString("name");
-                        String endBus = endStop.getString("name");
+                        if (mode.equals("TRANSIT")) {
+                            JSONObject transitDetails = step.getJSONObject("transit_details");
+                            JSONObject departureStopStop = transitDetails.getJSONObject("departure_stop");
+                            JSONObject endStop = transitDetails.getJSONObject("arrival_stop");
 
-                        stepsArr.add(new Step(start, end, mode, startBus, endBus));
+                            String startBus = departureStopStop.getString("name");
+                            String endBus = endStop.getString("name");
+
+                            stepsArr.add(new Step(start, end, mode, polylinePoints, startBus, endBus));
+                        } else {
+                            stepsArr.add(new Step(start, end, mode, polylinePoints));
+                        }
                     }
-                    else
-                    {
-                        stepsArr.add(new Step(start, end, mode));
+
+                    for (int i = 0; i < stepsArr.size(); i++) {
+                        Step step = stepsArr.get(i);
+                        addStepMarker(step);
+                        System.out.println(step);
                     }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-
-                for(int i = 0; i < stepsArr.size(); i++)
-                {
-                    Step step = stepsArr.get(i);
-                    addStepMarker(step);
-                    System.out.println(step);
-                }
-
+                System.out.println(jsonRoutes);
             }
-            catch (JSONException e) {
-                e.printStackTrace();
+            else
+            {
+                System.out.println("we are using a different parser");
+                System.out.println("THIS IS THE BIG BOY CRIME INDEX " + result);
             }
-            System.out.println(jsonRoutes);
-
             // Processing is complete, result contains the number of
             // results you processed
         }
