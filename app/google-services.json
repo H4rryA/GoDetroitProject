@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "968604688268",
+    "project_id": "godetroitandroid-1475899133854"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:968604688268:android:9911d41de1c5595e",
+        "android_client_info": {
+          "package_name": "com.isrhacks.godetroit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "968604688268-rhjqrl28l9s4csvs4rooo4n79nlboi2f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.isrhacks.godetroit",
+            "certificate_hash": "D4F335618CA6CA3A8BA4A6B5719F89F7C4CBFFEB"
+          }
+        },
+        {
+          "client_id": "968604688268-rnisoo9s5j4gnmdvrbam2vhd9unkoshj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt-xUMqhrycZWyHg_JkfXCOkOR1B35OLY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
