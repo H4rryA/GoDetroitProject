@@ -40,7 +40,7 @@ public class TripActivity extends AppCompatActivity implements TimePickerDialog.
 
             Calendar c = Calendar.getInstance();
             Date d = c.getTime();
-            SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-ddhh:mmZ");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddhh:mmZ");
             currentTime = sdf.format(d);
             currentTime = currentTime.substring(0, 10) + "T" + currentTime.substring(11);
         }
