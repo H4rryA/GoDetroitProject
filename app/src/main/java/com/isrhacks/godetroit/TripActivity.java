@@ -130,7 +130,7 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
             GoogleSignInAccount acct = result.getSignInAccount();
         } else {
             System.out.println("Sign In Fail");
-            logIn();
+//            logIn();
         }
     }
     @Override

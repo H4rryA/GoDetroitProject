@@ -4,12 +4,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.view.ViewTreeObserver;
-import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -85,6 +82,13 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         mMap.addMarker(new MarkerOptions().position(newMarker).title("New Marker"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(newMarker));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(11));
+
+    }
+
+    public void addStepMarker(Step step)
+    {
+        addMarker(step.start.latitude, step.start.longitude);
+//        addMarker(step.end.latitude, step.end.longitude);
     }
 
     public void queryRoute(String from, String to)
@@ -93,7 +97,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         String fromParam = "origin=" + from;
         String toParam = "destination=" + to;
         String transit = "mode=transit";
-        String key = "&key=AIzaSyC4Z2nrjk3V54cOiGVfEFwYjndbr4uZbaw";
+        String key = "key=AIzaSyC4Z2nrjk3V54cOiGVfEFwYjndbr4uZbaw";
         String parameters = "?" + fromParam + "&" + toParam + "&" + transit + "&" + key;
         String urlstr = baseUrl + parameters;
         System.out.println(urlstr);
@@ -116,15 +120,6 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                 urlConnection = (HttpURLConnection) url.openConnection();
 
                 InputStream in = urlConnection.getInputStream();
-
-//            InputStreamReader isw = new InputStreamReader(in);
-//
-//            int data = isw.read();
-//            while (data != -1) {
-//                char current = (char) data;
-//                data = isw.read();
-//                System.out.print(current);
-//            }
 
                 BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"), 8);
                 StringBuilder sb = new StringBuilder();
@@ -155,32 +150,53 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         }
 
         protected void onPostExecute(String result) {
-//            System.out.println(result);
+            System.out.println("JSON Parsing is now starting");
             JSONObject jsonRoutes = null;
+            ArrayList<Step> stepsArr = new ArrayList<Step>();
             try {
                 jsonRoutes = new JSONObject(result);
-                JSONArray routes = jsonRoutes.getJSONArray("routes");
-                System.out.println("Bounds: " + jsonRoutes.getJSONArray("routes").getJSONObject(0).getJSONObject("bounds").getJSONObject("northeast"));
-                JSONObject bounds = jsonRoutes.getJSONArray("routes").getJSONObject(0).getJSONObject("bounds");
-                JSONObject northeast = bounds.getJSONObject("northeast");
-                JSONObject southwest = bounds.getJSONObject("southwest");
 
-                double northeastlat = northeast.getDouble("lat");
-                double northeastlng = northeast.getDouble("lng");
-                double southwestlat = southwest.getDouble("lat");
-                double southwestlng = southwest.getDouble("lng");
-
-                addMarker(northeastlat, northeastlng);
-                addMarker(southwestlat, southwestlng);
-
-                System.out.println("Northeast" + northeastlat + " " + northeastlng + " Southwest " + southwestlat + " " + southwestlng);
-
-
-                for(int i = 0; i < routes.length(); i++)
+                JSONArray steps = jsonRoutes.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
+                //populate the steps array with all important information
+                for(int i = 0; i < steps.length(); i++)
                 {
-                    System.out.println(routes.get(i));
+                    JSONObject step = steps.getJSONObject(i);
+                    LatLng start;
+                    LatLng end;
+                    String mode;
+
+
+                    JSONObject jsonStart = step.getJSONObject("start_location");
+                    start = new LatLng(jsonStart.getDouble("lat"), jsonStart.getDouble("lng"));
+
+                    JSONObject jsonEnd = step.getJSONObject("end_location");
+                    end = new LatLng(jsonEnd.getDouble("lat"), jsonEnd.getDouble("lng"));
+                    mode = step.getString("travel_mode");
+
+                    if(mode.equals("TRANSIT"))
+                    {
+                        JSONObject transitDetails = step.getJSONObject("transit_details");
+                        JSONObject departureStopStop = transitDetails.getJSONObject("departure_stop");
+                        JSONObject endStop = transitDetails.getJSONObject("arrival_stop");
+
+                        String startBus = departureStopStop.getString("name");
+                        String endBus = endStop.getString("name");
+
+                        stepsArr.add(new Step(start, end, mode, startBus, endBus));
+                    }
+                    else
+                    {
+                        stepsArr.add(new Step(start, end, mode));
+                    }
                 }
-//                System.out.println("These are the routes " + jsonRoutes.getJSONArray("routes"));
+
+                for(int i = 0; i < stepsArr.size(); i++)
+                {
+                    Step step = stepsArr.get(i);
+                    addStepMarker(step);
+                    System.out.println(step);
+                }
+
             }
             catch (JSONException e) {
                 e.printStackTrace();
