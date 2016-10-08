@@ -225,6 +225,10 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
             // results you processed
         }
     }
+
+    public void startNav(){
+
+    }
 }
 
 

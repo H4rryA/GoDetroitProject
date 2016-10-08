@@ -106,10 +106,7 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
 
     private void logIn(){
         OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        if(opr.isDone()){
-            GoogleSignInResult result = opr.get();
-            handleSignInResult(result);
-        }else {
+        if(!opr.isDone()){
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             startActivityForResult(signInIntent, RC_SIGN_IN);
         }
@@ -127,7 +124,7 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
     public void handleSignInResult(GoogleSignInResult result){
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
+            /*GoogleSignInAccount acct = */result.getSignInAccount();
         } else {
             System.out.println("Sign In Fail");
 //            logIn();
