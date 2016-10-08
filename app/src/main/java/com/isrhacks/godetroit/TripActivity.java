@@ -1,7 +1,10 @@
 package com.isrhacks.godetroit;
 
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +16,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -24,7 +34,9 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class TripActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, TimePickerDialog.OnTimeSetListener, AdapterView.OnItemSelectedListener{
         private final int RC_SIGN_IN = 9001;
@@ -109,6 +121,9 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
         if(!opr.isDone()){
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             startActivityForResult(signInIntent, RC_SIGN_IN);
+        }else{
+            GoogleSignInAccount acct = opr.get().getSignInAccount();
+            postUsername(this, acct.getEmail(), acct.getId());
         }
     }
 
@@ -124,7 +139,8 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
     public void handleSignInResult(GoogleSignInResult result){
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
-            /*GoogleSignInAccount acct = */result.getSignInAccount();
+            GoogleSignInAccount acct = result.getSignInAccount();
+            postUsername(this, acct.getEmail(), acct.getId());
         } else {
             System.out.println("Sign In Fail");
 //            logIn();
@@ -144,4 +160,39 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         System.out.println("Connection Failed");
     }
+
+    public void postUsername(Context context, final String email, final String id){
+        RequestQueue queue = Volley.newRequestQueue(context);
+        StringRequest sr = new StringRequest(Request.Method.POST,"http://godetroit-dev.us-east-1.elasticbeanstalk.com/users/register", new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                System.out.println("Posted");
+                System.out.println(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+            //    postUsernameResponse.requestEndedWithError(error);
+            }
+        }){
+            @Override
+            protected Map<String,String> getParams(){
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("email", email);
+                params.put("uid", id);
+                return params;
+            }
+
+/*
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                Map<String,String> params = new HashMap<String, String>();
+                params.put("Content-Type","application/x-www-form-urlencoded");
+                return params;
+
+            }*/
+        };
+    queue.add(sr);
+    }
+
 }
