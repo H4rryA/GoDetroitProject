@@ -8,10 +8,9 @@ var secret = process.env.SECRET;
 
 // set up a mongoose model and pass it using module.exports
 var UserSchema = new mongoose.Schema({
-  username: {type: String, lowercase: true, unique: true},
+  uid: String,
   email: String,
   group: String,
-  password: String,
 });
 
 UserSchema.methods.setGroup = function (email) {
@@ -21,14 +20,14 @@ UserSchema.methods.setGroup = function (email) {
     this.group = 'user';
 };
 
-UserSchema.methods.setPassword = function(password){ //creating password
-  console.log('hello');
-  this.password = password;
-};
-
-UserSchema.methods.validPassword = function(password) { //validating password
-  return this.password === password;
-};
+// UserSchema.methods.setPassword = function(password){ //creating password
+//   console.log('hello');
+//   this.password = password;
+// };
+//
+// UserSchema.methods.validPassword = function(password) { //validating password
+//   return this.password === password;
+// };
 
 UserSchema.methods.generateJWT = function() { //creating jwt after valid pw
 

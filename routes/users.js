@@ -12,14 +12,13 @@ var User = mongoose.model('User');
 var validateUserGroup = require('./validation').validateUserGroup;
 
 router.post('/register', function(req, res, next){ //handles a request of post to /register
-  if(!req.body.username || !req.body.password){ //check all fields are filled
+  if(!req.body.uid || !req.body.email){ //check all fields are filled
     return res.status(400).json({message: 'Please fill out all fields'});
   }
   var user = new User();
-  user.username = req.body.username;
+  user.uid = req.body.uid;
   user.email = req.body.email;
-  user.password = req.body.password;
-  user.setGroup(req.body.email);
+  user.group = req.body.group;
 
   user.save(function (err){ //save
     if(err){
@@ -32,19 +31,17 @@ router.post('/register', function(req, res, next){ //handles a request of post t
 });
 
 router.post('/login', function(req, res, next){
-  if(!req.body.username || !req.body.password){ //checking fields
+  if(!req.body.uid /*|| !req.body.password*/){ //checking fields
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
-  passport.authenticate('local', function(err, user, info){ //using passport to find user
-    if(err){ return next(err); }
-
-    if(user){
-      return res.json({token: user.generateJWT()}); //creates a JWT
-    } else {
-      return res.status(401).json(info);
+  User.findOne({ uid: req.body.uid }, function (err, user) { //use mongoose to find user in database
+    if (err) { return done(err); }
+    if (!user) {
+      res.json({ message: 'Incorrect username.' });
     }
-  })(req, res, next);
+    return res.json({token: user.generateJWT()}) //return the to passport
+  });
 });
 router.get('/allusers', auth, function(req, res, next) { //get all user
       console.log(req.user);

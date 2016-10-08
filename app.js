@@ -10,9 +10,6 @@ var cors = require('cors'); //cross origins
 var mongoose = require('mongoose'); //mongoose
   requireDir('./models');
 
-var passport = require('passport'); //passport
-require('./config/passport');
-
 mongoose.Promise = global.Promise;
 
 mongoose.connect(process.env.MONGODB+'/godetroit');
@@ -31,13 +28,16 @@ app.set('view engine', 'ejs');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
-app.use('/crimes', crimes)
+app.use('/crimes', crimes);
+
+var passport = require('passport'); //passport
+require('./config/passport');
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

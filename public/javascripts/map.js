@@ -13,7 +13,7 @@ function initialize() {
   });
 
   google.maps.event.addListener(map, 'click', function(event) {
-    var parameters = 'lat='+event.latLng.lat()+'&long='+event.latLng.lng()+'&rad=1000';
+    var parameters = 'lat='+event.latLng.lat()+'&long='+event.latLng.lng()+'&rad=500';
     httpGetAsync('/crimes', parameters, function(response){
       addMarker(event.latLng, map, response);
     });
