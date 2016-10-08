@@ -15,6 +15,7 @@ import android.widget.TimePicker;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class TripActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, AdapterView.OnItemSelectedListener{
 
@@ -40,21 +41,30 @@ public class TripActivity extends AppCompatActivity implements TimePickerDialog.
 
             Calendar c = Calendar.getInstance();
             Date d = c.getTime();
-            SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-ddhh:mmZ");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddhh:mmZ", Locale.ENGLISH);
             currentTime = sdf.format(d);
-            currentTime = currentTime.substring(0, 10) + "T" + currentTime.substring(11);
+            currentTime = currentTime.substring(0, 10) + "T" + currentTime.substring(10);
         }
 
         public void setTime(View view){
-            //TODO Set time to current time.
-            int hour = 12;
-            int minute = 00;
+            int hour = Integer.valueOf(currentTime.substring(11,13));
+            int minute = Integer.valueOf(currentTime.substring(14,16));
             new TimePickerDialog(this, this, hour, minute, true).show();
         }
 
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            this.timeText.setText( hourOfDay + ":" + minute);
+            String hourString = String.valueOf(hourOfDay);
+            String minuteString = String.valueOf(minute);
+            if(hourOfDay/10 == 0){
+                hourString = String.format("%02d", hourOfDay);
+            }
+            if(minute/10 == 0){
+                minuteString = String.format("%02d", minute);
+            }
+            String time = hourString + ":" + minuteString;
+            this.timeText.setText(time);
+            currentTime = currentTime.substring(0,11)+time+currentTime.substring(16);
         }
 
         public void launchRoutes(View v){
