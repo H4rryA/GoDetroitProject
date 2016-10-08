@@ -8,6 +8,7 @@ import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
@@ -29,6 +30,7 @@ class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> {
         TextView crimeView;
         TextView startStop;
         TextView endStop;
+        Button startRoute;
         ViewHolder(View view) {
             super(view);
             cardView = (CardView) view.findViewById(R.id.route_card);
@@ -37,6 +39,7 @@ class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> {
             crimeView = (TextView) view.findViewById(R.id.crime_text);
             startStop = (TextView) view.findViewById(R.id.startStop);
             endStop = (TextView) view.findViewById(R.id.endStop);
+            startRoute = (Button) view.findViewById(R.id.start_route);
         }
     }
 
@@ -66,11 +69,13 @@ class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> {
                     holder.crimeView.setVisibility(View.VISIBLE);
                     holder.startStop.setVisibility(View.VISIBLE);
                     holder.endStop.setVisibility(View.VISIBLE);
+                    holder.startRoute.setVisibility(View.VISIBLE);
                     expandedView = true;
                 }else{
                     holder.crimeView.setVisibility(View.GONE);
                     holder.startStop.setVisibility(View.GONE);
                     holder.endStop.setVisibility(View.GONE);
+                    holder.startRoute.setVisibility(View.GONE);
                     expandedView = false;
                 }
             }
@@ -86,4 +91,5 @@ class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> {
     public int getItemCount() {
         return routes.length/5;
     }
+
 }
