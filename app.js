@@ -10,8 +10,16 @@ var cors = require('cors'); //cross origins
 var mongoose = require('mongoose'); //mongoose
   requireDir('./models');
 
+var passport = require('passport'); //passport
+require('./config/passport');
+
+mongoose.Promise = global.Promise;
+
+mongoose.connect(process.env.MONGODB+'/godetroit');
+
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var crimes = require('./routes/crime');
 
 var app = express();
 
@@ -29,6 +37,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/crimes', crimes)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
