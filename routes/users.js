@@ -21,11 +21,7 @@ router.post('/register', function(req, res, next){ //handles a request of post t
   user.group = req.body.group;
 
   user.save(function (err){ //save
-    if(err){
-      console.log('err' + err);
-      return res.send({token: 'duplication'});
-    }
-    console.log('all good');
+    if(err){ return next(err); }
     return res.json({token: user.generateJWT()}) //creates a JWT
   });
 });
@@ -38,7 +34,7 @@ router.post('/login', function(req, res, next){
   User.findOne({ uid: req.body.uid }, function (err, user) { //use mongoose to find user in database
     if (err) { return done(err); }
     if (!user) {
-      res.json({ message: 'Incorrect username.' });
+      res.json({ message: 'Incorrect uid.' });
     }
     return res.json({token: user.generateJWT()}) //return the to passport
   });

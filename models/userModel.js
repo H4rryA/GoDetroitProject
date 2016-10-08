@@ -13,12 +13,12 @@ var UserSchema = new mongoose.Schema({
   group: String,
 });
 
-UserSchema.methods.setGroup = function (email) {
-  if(email.split("@")[1] == 'godetroid.com')
-    this.group = 'driver';
-  else
-    this.group = 'user';
-};
+// UserSchema.methods.setGroup = function (email) {
+//   if(email.split("@")[1] == 'godetroid.com')
+//     this.group = 'driver';
+//   else
+//     this.group = 'user';
+// };
 
 // UserSchema.methods.setPassword = function(password){ //creating password
 //   console.log('hello');
@@ -38,7 +38,7 @@ UserSchema.methods.generateJWT = function() { //creating jwt after valid pw
 
   return jwt.sign({
     _id: this._id, //payload
-    username: this.username,
+    uid: this.uid,
     group:this.group,
     exp: parseInt(exp.getTime() / 1000), //expiration time
   }, secret);
