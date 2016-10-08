@@ -1,37 +1,46 @@
 package com.isrhacks.godetroit;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 
 /**
  * Created by harry on 10/8/16.
  */
 
-public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> {
+class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> {
 
     String[] routes;
+    private boolean expandedView = false;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        // each data item is just a string in this case
-        public CardView cardView;
-        public TextView routeView;
-        public TextView timeView;
-        public TextView crimeView;
-        public ViewHolder(View view) {
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        CardView cardView;
+        TextView routeView;
+        TextView timeView;
+        TextView crimeView;
+        TextView startStop;
+        TextView endStop;
+        ViewHolder(View view) {
             super(view);
             cardView = (CardView) view.findViewById(R.id.route_card);
             routeView = (TextView) view.findViewById(R.id.route);
             timeView = (TextView) view.findViewById(R.id.total_time);
             crimeView = (TextView) view.findViewById(R.id.crime_text);
+            startStop = (TextView) view.findViewById(R.id.startStop);
+            endStop = (TextView) view.findViewById(R.id.endStop);
         }
     }
 
-    public RouteAdapter(String[] r){
+    RouteAdapter(String[] r){
         routes = r;
     }
 
@@ -47,21 +56,34 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.cardView.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-                TextView crimeText = (TextView) v.findViewById(R.id.crime_text);
-                crimeText.setVisibility(View.VISIBLE);
+                TransitionManager.beginDelayedTransition(holder.cardView);
+                if(!expandedView) {
+                    holder.crimeView.setVisibility(View.VISIBLE);
+                    holder.startStop.setVisibility(View.VISIBLE);
+                    holder.endStop.setVisibility(View.VISIBLE);
+                    expandedView = true;
+                }else{
+                    holder.crimeView.setVisibility(View.GONE);
+                    holder.startStop.setVisibility(View.GONE);
+                    holder.endStop.setVisibility(View.GONE);
+                    expandedView = false;
+                }
             }
         });
-        holder.routeView.setText(routes[3*position]);
-        holder.timeView.setText(routes[3*position+1]);
-        holder.crimeView.setText(routes[3*position+2]);
+        holder.routeView.setText(routes[5*position]);
+        holder.timeView.setText(routes[5*position+1]);
+        holder.crimeView.setText(routes[5*position+2]);
+        holder.startStop.setText(routes[5*position+3]);
+        holder.endStop.setText(routes[5*position+4]);
     }
 
     @Override
     public int getItemCount() {
-        return routes.length/2;
+        return routes.length/5;
     }
 }

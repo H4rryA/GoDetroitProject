@@ -3,16 +3,20 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/route_card"
-        card_view:cardUseCompatPadding="true">
+        android:layout_marginBottom="-5dp"
+        android:layout_marginTop="-5dp"
+        card_view:cardUseCompatPadding="true"
+        card_view:cardElevation="5dp"
+        card_view:contentPadding="5dp">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp">
+            android:animateLayoutChanges="true">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -26,14 +30,35 @@
                 android:id="@+id/total_time"
                 android:text="10 min"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true" />
-            <TextView
-                android:layout_width="wrap_content"
+                android:layout_alignParentRight="true" /><!--
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/crime_text"
-                android:text="Crime Index: 100"
+                android:layout_below="@id/route"
                 android:visibility="invisible"
-                android:layout_below="@id/route"/>
+                android:id="@+id/details">-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/crime_text"
+                    android:text="Crime Index: 100"
+                    android:layout_below="@id/route"
+                    android:visibility="gone"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/startStop"
+                    android:text="Green and Gregory"
+                    android:layout_below="@id/crime_text"
+                    android:visibility="gone"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/endStop"
+                    android:text="Transit Plaza"
+                    android:layout_below="@id/startStop"
+                    android:visibility="gone"/><!--
+            </RelativeLayout>-->
         </RelativeLayout>
     </android.support.v7.widget.CardView>
 </LinearLayout>
