@@ -164,6 +164,9 @@ function populateDOM(stops) {
 
 function increaseTime(){
     starttime = addHours(starttime, 1);
+    if(starttime > new Date(2016,9,10,0,0)){
+      starttime = new Date(2016,9,9,1,0)
+    }
     setTimeout(2000);
     console.log(starttime.toISOString());
     console.log(rider_markers);
