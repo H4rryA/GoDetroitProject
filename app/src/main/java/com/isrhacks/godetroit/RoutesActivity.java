@@ -2,6 +2,7 @@ package com.isrhacks.godetroit;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -41,6 +42,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     private GoogleMap mMap;
     private String fromLocation;
     private String toLocation;
+    private static String token;
 
     RecyclerView recycler;
     LinearLayoutManager layoutManager;
@@ -49,6 +51,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     static Context context;
     static int lastRoute = 0;
     static ArrayList<Route> routes = new ArrayList<>();
+
 
 //    int[] colors = {Color.RED, Color.BLUE, Color.GREEN, Color.CYAN, Color.BLACK};
 
@@ -64,6 +67,9 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        SharedPreferences prefs = getSharedPreferences(TripActivity.MY_PREFERENCES, MODE_PRIVATE);
+        token = prefs.getString("jwt", null);
 
         recycler = (RecyclerView) findViewById(R.id.routes_recycler);
         recycler.setHasFixedSize(true);
@@ -344,7 +350,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
             if(step.mode.equals("TRANSIT"))
             {
                 postTransitData(step.transitDetails.toString());
-                System.out.println("This is the details\n" + step.transitDetails.toString());
+                System.out.println("This is the details we are posting\n" + step.transitDetails.toString());
             }
         }
     }
@@ -373,12 +379,18 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("Content-Type", "application/x-www-form-urlencoded");
+                params.put("Content-Type", "application/json");
+                params.put("Authorization", "bearer " + token);
                 return params;
             }
 
         };
         queue.add(sr);
+    }
+
+    public void startNav(View v)
+    {
+
     }
 }
 

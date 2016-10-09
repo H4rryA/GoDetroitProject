@@ -3,6 +3,7 @@ package com.isrhacks.godetroit;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -31,6 +32,9 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -41,6 +45,7 @@ import java.util.Map;
 public class TripActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, TimePickerDialog.OnTimeSetListener, AdapterView.OnItemSelectedListener{
         private final int RC_SIGN_IN = 9001;
 
+        public static final String MY_PREFERENCES = "isrhacks";
         String tripTime;
         TextView timeText;
         String spinner_choice;
@@ -117,14 +122,14 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
     private void logIn(){
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        if(!opr.isDone()){
+        /*OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+        if(!opr.isDone()){*/
             Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
             startActivityForResult(signInIntent, RC_SIGN_IN);
-        }else{
+        /*}else{
             GoogleSignInAccount acct = opr.get().getSignInAccount();
             postUsername(this, acct.getEmail(), acct.getId());
-        }
+        }*/
     }
 
     @Override
@@ -142,8 +147,9 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
             GoogleSignInAccount acct = result.getSignInAccount();
             postUsername(this, acct.getEmail(), acct.getId());
         } else {
+            System.out.println("Hello boy? " + result.getStatus().toString());
             System.out.println("Sign In Fail");
-//            logIn();
+            logIn();
         }
     }
     @Override
@@ -166,8 +172,19 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
         StringRequest sr = new StringRequest(Request.Method.POST,"http://godetroit-dev.us-east-1.elasticbeanstalk.com/users/register", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                System.out.println("Posted");
-                System.out.println(response);
+                System.out.println("Posted This is the response");
+                JSONObject tokenobj;
+                String token = "";
+                try {
+                    tokenobj = new JSONObject(response);
+                    token = tokenobj.getString("token");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                System.out.println(token);
+                SharedPreferences.Editor editor = getSharedPreferences(MY_PREFERENCES, MODE_PRIVATE).edit();
+                editor.putString("jwt", token);
+                editor.commit();
             }
         }, new Response.ErrorListener() {
             @Override
