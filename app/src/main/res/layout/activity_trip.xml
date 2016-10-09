@@ -15,11 +15,11 @@
         android:id="@+id/from_layout"
         android:padding="4dp">
     <TextView
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/from_string"
         android:textSize="24sp"
-        android:id="@+id/from"/>
+        android:id="@+id/from"
+        android:layout_width="65dp" />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -32,21 +32,23 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/to_layout"
-        android:layout_below="@id/from_layout"
-        android:padding="4dp">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/to_string"
-        android:textSize="24sp"
-        android:id="@+id/to"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/to_hint"
-        android:id="@+id/to_input"
-        android:text="42.341481, -83.061014"
-        android:textSize="20sp"/>
+        android:padding="4dp"
+        android:layout_below="@+id/from_layout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+        <TextView
+            android:layout_height="wrap_content"
+            android:text="@string/to_string"
+            android:textSize="24sp"
+            android:id="@+id/to"
+            android:layout_width="65dp" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/to_hint"
+            android:id="@+id/to_input"
+            android:text="42.341481, -83.061014"
+            android:textSize="20sp"/>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,21 +59,25 @@
         <Spinner
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:id="@+id/time_spinner"/>
+            android:id="@+id/time_spinner" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/time_text"
             android:clickable="true"
             android:text="12:00"
-            android:onClick="setTime"/>
+            android:onClick="setTime"
+            android:textSize="20sp" />
     </LinearLayout>
     <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_below="@id/time_layout"
-        android:id="@+id/transport_radio">
+        android:id="@+id/transport_radio"
+        android:checkedButton="@+id/radio_transit"
+        android:padding="4dp">
         <RadioButton android:id="@+id/radio_transit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -100,7 +106,8 @@
         android:layout_below="@id/transport_radio"
         android:onClick="launchRoutes"
         android:backgroundTint="@color/colorPrimaryDark"
-        android:textColor="@color/fontLight" />
+        android:textColor="@color/fontLight"
+        android:padding="4dp"/>
 
     <Button
         android:layout_width="match_parent"
@@ -110,4 +117,5 @@
         android:layout_alignParentBottom="true"
         android:onClick="notify"
         android:backgroundTint="@color/colorAccent" />
+
 </RelativeLayout>

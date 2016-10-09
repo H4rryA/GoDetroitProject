@@ -20,6 +20,7 @@ import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -409,7 +410,6 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
             public void onResponse(String response) {
                 System.out.println("Posted");
                 System.out.println(response);
-                wipeView();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -465,9 +465,12 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         for (int i = 0; i < steps.size(); i++) {
             Step step = steps.get(i);
             if (step.mode.equals("TRANSIT")) {
+                System.out.println("We are beginning a post");
                 postTransitData(step.transitDetails.toString());
             }
         }
+
+        wipeView();
     }
 
     public void wipeView() {
@@ -475,6 +478,9 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         LinearLayout linlay = (LinearLayout) findViewById(R.id.details);
         linlay.removeView(recycle);
         LinearLayout invislay = (LinearLayout) findViewById(R.id.invisDetails);
+        Route route = routes.get(selectedRoute);
+        ((TextView) findViewById(R.id.timetext)).setText("Time: " + route.time);
+        ((TextView) findViewById(R.id.crimetext)).setText("Crime Rating: " + route.crimeRating);
         invislay.setVisibility(View.VISIBLE);
     }
 
@@ -484,6 +490,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
             System.out.println("Finding Location");
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                     mGoogleApiClient);
+            mMap.setMyLocationEnabled(true);
         }
         SmsManager smsManager = SmsManager.getDefault();
         for(int i = 0; i < 5; i++){

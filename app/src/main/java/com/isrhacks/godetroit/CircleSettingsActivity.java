@@ -16,7 +16,21 @@ public class CircleSettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_circle_settings);
-
+        SharedPreferences preferences = getSharedPreferences(TripActivity.MY_PREFERENCES, MODE_PRIVATE);
+        for(int i = 0; i < 5; i++){
+            int contactId = getResources().getIdentifier(order[i] + "Contact", "id", getApplicationContext().getPackageName());
+            int numberID = getResources().getIdentifier(order[i] + "Number", "id", getApplicationContext().getPackageName());
+            String contact = preferences.getString("contact"+String.valueOf(i), "");
+            String number = preferences.getString("number"+String.valueOf(i), "");
+            if(!contact.equals("")) {
+                TextView contactView = ((TextView) findViewById(contactId));
+                contactView.setText(contact);
+                contactView.setVisibility(View.VISIBLE);
+                TextView numberView = ((TextView) findViewById(numberID));
+                numberView.setText(number);
+                numberView.setVisibility(View.VISIBLE);
+            }
+        }
     }
 
     public void updatePreferences(){
@@ -28,8 +42,10 @@ public class CircleSettingsActivity extends AppCompatActivity {
         System.out.println(R.id.firstContact);
         TextView contact = (TextView) findViewById(contactId);
         TextView number = (TextView) findViewById(numberID);
+
         System.out.println("contact"+ String.valueOf(i) + contact.getText().toString());
         System.out.println("number"+ String.valueOf(i) + number.getText().toString());
+
         if (!contact.getText().toString().equals("")){
             editor.putString("contact" + String.valueOf(i), contact.getText().toString());
         }

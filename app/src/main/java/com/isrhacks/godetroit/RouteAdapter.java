@@ -11,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 
 /**
  * Created by harry on 10/8/16.
@@ -28,8 +26,8 @@ class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> {
         TextView routeView;
         TextView timeView;
         TextView crimeView;
-        TextView startStop;
-        TextView endStop;
+        TextView startTime;
+        TextView endTime;
         Button startRoute;
         ViewHolder(View view) {
             super(view);
@@ -37,8 +35,8 @@ class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> {
             routeView = (TextView) view.findViewById(R.id.route);
             timeView = (TextView) view.findViewById(R.id.total_time);
             crimeView = (TextView) view.findViewById(R.id.crime_text);
-            startStop = (TextView) view.findViewById(R.id.startStop);
-            endStop = (TextView) view.findViewById(R.id.endStop);
+            startTime = (TextView) view.findViewById(R.id.startStop);
+            endTime = (TextView) view.findViewById(R.id.endStop);
             startRoute = (Button) view.findViewById(R.id.start_route);
         }
     }
@@ -69,16 +67,16 @@ class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> {
                 if(!expandedView) {
                     RoutesActivity.displayRoute(position);
                     holder.crimeView.setVisibility(View.VISIBLE);
-                    holder.startStop.setVisibility(View.VISIBLE);
-                    holder.endStop.setVisibility(View.VISIBLE);
+                    /*holder.startTime.setVisibility(View.VISIBLE);
+                    holder.endTime.setVisibility(View.VISIBLE);*/
                     holder.startRoute.setVisibility(View.VISIBLE);
                     holder.startRoute.setTag(position);
                     expandedView = true;
                 }else{
                     RoutesActivity.hideRoute(position);
                     holder.crimeView.setVisibility(View.GONE);
-                    holder.startStop.setVisibility(View.GONE);
-                    holder.endStop.setVisibility(View.GONE);
+                    /*holder.startTime.setVisibility(View.GONE);
+                    holder.endTime.setVisibility(View.GONE);*/
                     holder.startRoute.setVisibility(View.GONE);
                     expandedView = false;
                 }
@@ -87,8 +85,8 @@ class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> {
         holder.routeView.setText(routes[5*position]);
         holder.timeView.setText(routes[5*position+1]);
         holder.crimeView.setText(routes[5*position+2]);
-        holder.startStop.setText(routes[5*position+3]);
-        holder.endStop.setText(routes[5*position+4]);
+        holder.startTime.setText(routes[5*position+3]);
+        holder.endTime.setText(routes[5*position+4]);
     }
 
     @Override

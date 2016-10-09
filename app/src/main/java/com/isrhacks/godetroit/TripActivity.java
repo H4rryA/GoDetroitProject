@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -94,10 +95,15 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
                     .build();
             logIn();
 
+            RadioGroup r = (RadioGroup) findViewById(R.id.transport_radio);
+
+            transport_choice = ((RadioButton) findViewById(r.getCheckedRadioButtonId())).getText().toString();
             Calendar c = Calendar.getInstance();
             Date d = c.getTime();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddhh:mmZ", Locale.ENGLISH);
             tripTime = sdf.format(d);
+            String current = tripTime.substring(10,12)+":"+tripTime.substring(13,15);
+            timeText.setText(current);
 //            tripTime = tripTime.substring(0, 10) + "T" + tripTime.substring(10);
 
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -120,8 +126,6 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
         public boolean onOptionsItemSelected(MenuItem item) {
             // Handle item selection
             switch (item.getItemId()) {
-                case R.id.action_settings:
-                    return true;
                 case R.id.circle_settings:
                     Intent intent = new Intent(this, CircleSettingsActivity.class);
                     startActivity(intent);
@@ -147,7 +151,6 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             String hourString = String.valueOf(hourOfDay);
             String minuteString = String.valueOf(minute);
-            System.out.println(hourString);
             hourString = String.format("%02d", hourOfDay);
             minuteString = String.format("%02d", minute);
             String time = hourString + ":" + minuteString;
@@ -178,14 +181,8 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
         }
 
     private void logIn(){
-        /*OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        if(!opr.isDone()){*/
-            Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-            startActivityForResult(signInIntent, RC_SIGN_IN);
-        /*}else{
-            GoogleSignInAccount acct = opr.get().getSignInAccount();
-            postUsername(this, acct.getEmail(), acct.getId());
-        }*/
+        Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+        startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
     @Override

@@ -18,26 +18,28 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/firstContact"
-            android:hint="Emergency Contact"/>
+            android:hint="Emergency Contact"
+            android:padding="5dp"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/firstNumber"
             android:hint="Contact's Number"
-            android:paddingBottom="5dp"
+            android:padding="5dp"
             android:inputType="phone"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/secondContact"
             android:hint="Emergency Contact"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:padding="5dp"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/secondNumber"
             android:hint="Contact's Number"
-            android:paddingBottom="5dp"
+            android:padding="5dp"
             android:inputType="phone"
             android:visibility="gone"/>
         <EditText
@@ -45,13 +47,14 @@
             android:layout_height="wrap_content"
             android:id="@+id/thirdContact"
             android:hint="Emergency Contact"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:padding="5dp"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/thirdNumber"
             android:hint="Contact's Number"
-            android:paddingBottom="5dp"
+            android:padding="5dp"
             android:inputType="phone"
             android:visibility="gone"/>
         <EditText
@@ -59,36 +62,40 @@
             android:layout_height="wrap_content"
             android:id="@+id/fourthContact"
             android:hint="Emergency Contact"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:padding="5dp"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/fourthNumber"
             android:hint="Contact's Number"
-            android:paddingBottom="5dp"
             android:inputType="phone"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:padding="5dp"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/fifthContact"
             android:hint="Emergency Contact"
-            android:visibility="gone"/>
+            android:visibility="gone"
+            android:padding="5dp"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/fifthNumber"
             android:hint="Contact's Number"
-            android:paddingBottom="5dp"
+            android:padding="5dp"
             android:inputType="phone"
             android:visibility="gone"/>
-        <TextView
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Add Contact"
             android:id="@+id/add_contact"
-            android:clickable="true"
-            android:onClick="addContact"/>
+            android:onClick="addContact"
+            android:padding="5dp"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:textColor="@color/fontLight"/>
     </LinearLayout>
 
 </RelativeLayout>
