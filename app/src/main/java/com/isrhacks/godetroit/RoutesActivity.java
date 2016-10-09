@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -49,6 +51,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     private String toLocation;
     private long time = 0;
     private String constraint;
+    private String transportMode;
     private static String token;
 
     RecyclerView recycler;
@@ -73,7 +76,9 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         toLocation = intent.getStringExtra("to");
         String timeStr = intent.getStringExtra("time");
         constraint = intent.getStringExtra("time_constraint");
+        transportMode = intent.getStringExtra("transportation");
 
+        getSupportActionBar().setTitle(transportMode + " Routes");
 
         //convert timeStr to epoch time
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddhh:mmZ", Locale.ENGLISH);
@@ -142,7 +147,15 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         String baseUrl = "https://maps.googleapis.com/maps/api/directions/json";
         String fromParam = "origin=" + from;
         String toParam = "destination=" + to;
-        String transit = "mode=transit";
+        String transit = "";
+        if(transportMode != null && transportMode.length() > 0)
+        {
+            transit = "mode=" + transportMode.toLowerCase();
+        }
+        else
+        {
+            transit = "mode=transit";
+        }
         String alternatives = "alternatives=true";
         String constraintParam = "";
         //check if we are using depart by or arrive by and use correct format
@@ -213,8 +226,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                     String polylinePoints;
                     String instruction;
 
-                    instruction = step.getString("html_instructions");
-
+                    instruction = android.text.Html.fromHtml(step.getString("html_instructions")).toString();
                     JSONObject jsonStart = step.getJSONObject("start_location");
                     start = new LatLng(jsonStart.getDouble("lat"), jsonStart.getDouble("lng"));
 
@@ -410,13 +422,14 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         routes.get(route).hideRoute();
     }
 
-    public static void postTransitData(final String transitData) {
+    public void postTransitData(final String transitData) {
         RequestQueue queue = Volley.newRequestQueue(context);
         StringRequest sr = new StringRequest(Request.Method.POST, "http://godetroit-dev.us-east-1.elasticbeanstalk.com/passengerSchedule", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 System.out.println("Posted");
                 System.out.println(response);
+                wipeView();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -461,11 +474,12 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         queue.add(sr);
     }
 
+    int selectedRoute = 0;
     public void startNav(View v)
     {
 
-        System.out.println("BITCH PLEASE " + v.getTag());
         int index = (int) v.getTag();
+        selectedRoute = index;
         //send route to backend
         ArrayList<Step> steps = routes.get(index).route;
         for(int i = 0; i < steps.size(); i++)
@@ -474,6 +488,29 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
             if(step.mode.equals("TRANSIT"))
             {
                 postTransitData(step.transitDetails.toString());
+            }
+        }
+    }
+
+    public void wipeView()
+    {
+        RecyclerView recycle = (RecyclerView) findViewById(R.id.routes_recycler);
+        LinearLayout linlay = (LinearLayout) findViewById(R.id.details);
+        linlay.removeView(recycle);
+        LinearLayout invislay = (LinearLayout) findViewById(R.id.invisDetails);
+        invislay.setVisibility(View.VISIBLE);
+    }
+
+    public void notifyCircle(View v)
+    {
+        //TODO Send current location.
+        SharedPreferences preferences = getSharedPreferences(TripActivity.MY_PREFERENCES, MODE_PRIVATE);
+        SmsManager smsManager = SmsManager.getDefault();
+        for(int i = 0; i < 5; i++){
+            String next = preferences.getString("number"+String.valueOf(i), "0");
+            if(!next.equals("0") && !next.equals(null)){
+                System.out.println(next);
+                smsManager.sendTextMessage(next, null, "Send Help!", null, null);
             }
         }
     }

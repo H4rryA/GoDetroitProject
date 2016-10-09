@@ -24,7 +24,7 @@
         completions."
     </string>
     <string name="title_activity_circle_settings">Settings</string>
-    <string name="notify_circle">Notify Circle</string>
+    <string name="notify_circle">Alert Circle</string>
     <string name="go">GO!</string>
 
     <!-- Strings related to Settings -->

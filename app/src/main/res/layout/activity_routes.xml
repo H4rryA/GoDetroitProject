@@ -18,6 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:id="@+id/details"
         android:layout_weight="5">
 
         <TextView
@@ -33,6 +34,36 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/routes_recycler" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:id="@+id/invisDetails"
+            android:padding="5dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/timetext"
+                android:text="Time: "/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/crimetext"
+                android:text="Crime Index: "/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="notifyCircle"
+                android:layout_gravity="bottom"
+                android:text="@string/notify_circle"/>
+
+        </LinearLayout>
+
 
 
 
