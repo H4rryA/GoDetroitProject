@@ -69,7 +69,15 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="GO!"
+        android:text="@string/go"
         android:layout_below="@id/time_layout"
         android:onClick="launchRoutes"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/notify_circle"
+        android:id="@+id/notify_in_trip"
+        android:layout_alignParentBottom="true"
+        android:onClick="notifyCircle"/>
 </RelativeLayout>

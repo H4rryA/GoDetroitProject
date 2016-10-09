@@ -18,16 +18,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/firstContact"
-            android:hint="Emergency Contact"
-            android:text="Harry"/>
+            android:hint="Emergency Contact"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/firstNumber"
             android:hint="Contact's Number"
             android:paddingBottom="5dp"
-            android:inputType="phone"
-            android:text="9255192992"/>
+            android:inputType="phone"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
