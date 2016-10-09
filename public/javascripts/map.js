@@ -2,7 +2,9 @@ var map;
 var heatmap;
 var click_markers = [];
 var rider_markers = [];
-var hidemarker = false;
+var hidemarker = [false,false];
+
+var starttime = new Date(2016,9,9,0,0)
 
 function loadApi() {
   gapi.client.load('fusiontables', 'v1', initialize);
@@ -26,11 +28,12 @@ function initialize() {
     var parameters = 'lat='+event.latLng.lat()+'&long='+event.latLng.lng()+'&rad=500';
     httpGetAsync('/crimes?', parameters, function(response){
       console.log(response);
-      addMarker(event.latLng, response);
+      addMarker(event.latLng, response, click_markers);
     });
   });
 
-  httpGetRiders();
+  console.log(starttime);
+  setInterval(increaseTime,2000);
 
   var query = 'select col0, col1 from 1zHCgMcx-VnSvSATgylPUvUidXih50QBHxP0lAGZP limit 1000';
   var request = gapi.client.fusiontables.query.sqlGet({ sql: query });
@@ -39,24 +42,42 @@ function initialize() {
   });
 }
 
-function setMapOnAll(map) {
-        for (var i = 0; i < click_markers.length; i++) {
-          click_markers[i].setMap(map);
-        }
-      }
+function setMapOnAllClick(map) {
+  for (var i = 0; i < click_markers.length; i++) {
+    click_markers[i].setMap(map);
+  }
+  click_markers = []
+}
+
+function wipeRiderMarkers() {
+  console.log('wiped');
+  for (var i = 0; i < rider_markers.length; i++) {
+    rider_markers[i].setMap(null);
+  }
+  rider_markers = []
+}
 
 function clearMarkers() {
-        if(hidemarker == false){
-          setMapOnAll(null);
-          heatmap.setMap(null);
-          hidemarker = true;
-        }
-        else {
-          setMapOnAll(map);
-          heatmap.setMap(map);
-          hidemarker = false;
-        }
-      }
+    if(hidemarker[0] == false){
+      setMapOnAllClick(null);
+      hidemarker[0] = true;
+    }
+    else {
+      setMapOnAllClick(map);
+      hidemarker[0] = false;
+    }
+}
+
+function hideHM() {
+  if(hidemarker[1] == false){
+    heatmap.setMap(null);
+    hidemarker[1] = true;
+  }
+  else {
+    heatmap.setMap(map);
+    hidemarker[1] = false;
+  }
+}
 
 function onDataFetched(response) {
   if (response.error) {
@@ -106,7 +127,7 @@ function drawHeatmap(locations) {
   heatmap.setMap(map);
 }
 
-function addMarker(location, num) {
+function addMarker(location, num, markertype) {
   // Add the marker at the clicked location, and add the next-available label
   // from the array of alphabetical characters.
   var marker = new google.maps.Marker({
@@ -114,14 +135,14 @@ function addMarker(location, num) {
     label: num,
     map: map
   });
-  click_markers.push(marker);
+  markertype.push(marker);
 }
 //http calls for marker points
 function httpGetAsync(theUrl, parameters, callback){
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-            console.log(xmlHttp.responseText);
+            // console.log(xmlHttp.responseText);
             callback(xmlHttp.responseText);
     }
     xmlHttp.open("GET", theUrl+parameters, true); // true for asynchronous
@@ -129,18 +150,30 @@ function httpGetAsync(theUrl, parameters, callback){
 }
 
 function httpGetRiders() {
-  var parameters = ''
-  httpGetAsync('/passengerSchedule', parameters, populateDOM)
+  var parameters = 'time='+starttime.toISOString();
+  httpGetAsync('/passengerSchedule?', parameters, populateDOM)
 }
 
 function populateDOM(stops) {
   stops = JSON.parse(stops);
   for(var j = 0 ; j < stops.length ; j++){
-    console.log(stops[j].count);
     p = new google.maps.LatLng(stops[j].gps[0], stops[j].gps[1])
-    addMarker(p, ""+stops[j].count+"")
+    addMarker(p, ""+stops[j].count+"", rider_markers)
   }
 }
 
+function increaseTime(){
+    starttime = addHours(starttime, 1);
+    setTimeout(2000);
+    console.log(starttime.toISOString());
+    console.log(rider_markers);
+    wipeRiderMarkers();
+    httpGetRiders();
+}
+
+function addHours(date,h){
+    date.setHours(date.getHours()+h);
+    return date;
+}
 
 google.maps.event.addDomListener(window, 'load', loadApi);

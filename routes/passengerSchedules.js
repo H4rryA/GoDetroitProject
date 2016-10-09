@@ -65,9 +65,12 @@ router.post('/passengerSchedule', auth, function(req, res, next) {
 //input date - 10 min
 
 router.get('/passengerSchedule', function(req, res, next) {
-    t1 = req.query.time;
-    t2 = t1
-    Stop.find().exec(function(err, stp) {
+    t1 = new Date(req.query.time);
+    t2 = new Date(req.query.time)
+    t2 = t2.setHours(t1.getHours()+1);
+    console.log(t1)
+    console.log(t2)
+    Stop.find({"time" : {$gte: t1, $lt: t2}}).exec(function(err, stp) {
       if(err){return next(err);}
       res.json(stp);
     })
