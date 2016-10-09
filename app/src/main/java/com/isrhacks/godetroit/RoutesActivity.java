@@ -1,10 +1,18 @@
 package com.isrhacks.godetroit;
 
+import android.*;
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +28,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -44,7 +55,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     private GoogleMap mMap;
     private String fromLocation;
@@ -61,7 +72,8 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     static Context context;
     static int lastRoute = 0;
     static ArrayList<Route> routes = new ArrayList<>();
-
+    GoogleApiClient mGoogleApiClient;
+    Location mLastLocation;
 
 //    int[] colors = {Color.RED, Color.BLUE, Color.GREEN, Color.CYAN, Color.BLACK};
 
@@ -84,9 +96,8 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddhh:mmZ", Locale.ENGLISH);
         try {
             Date date = sdf.parse(timeStr);
-            time = date.getTime()/1000;
-        }
-        catch (ParseException e) {
+            time = date.getTime() / 1000;
+        } catch (ParseException e) {
             e.printStackTrace();
         }
         System.out.println(constraint + ": " + time);
@@ -103,9 +114,14 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         recycler.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(layoutManager);
-        String[] test = new String[] {"22N 5 min", "15 min", "50", "FAR", "ISR", "13N 4 min", "12 min", "75","Main Library", "Transit Plaza", "12W 3 min", "12 min", "100","PAR", "Wright and Stoughton", "50E 15 min", "30 min", "80", "ISR", "Illini Union"};
+        String[] test = new String[]{"22N 5 min", "15 min", "50", "FAR", "ISR", "13N 4 min", "12 min", "75", "Main Library", "Transit Plaza", "12W 3 min", "12 min", "100", "PAR", "Wright and Stoughton", "50E 15 min", "30 min", "80", "ISR", "Illini Union"};
         routeAdapter = new RouteAdapter(test);
         recycler.setAdapter(routeAdapter);
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
 
@@ -128,13 +144,11 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
-    public void updateRouteAdapter()
-    {
+    public void updateRouteAdapter() {
         System.out.println("We are now updating the adapter");
     }
 
-    public Marker addMarker(double lat, double lng, String title)
-    {
+    public Marker addMarker(double lat, double lng, String title) {
         LatLng newMarker = new LatLng(lat, lng);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(newMarker));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(12));
@@ -142,29 +156,22 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
 
     }
 
-    public void queryRoute(String from, String to)
-    {
+    public void queryRoute(String from, String to) {
         String baseUrl = "https://maps.googleapis.com/maps/api/directions/json";
         String fromParam = "origin=" + from;
         String toParam = "destination=" + to;
         String transit = "";
-        if(transportMode != null && transportMode.length() > 0)
-        {
+        if (transportMode != null && transportMode.length() > 0) {
             transit = "mode=" + transportMode.toLowerCase();
-        }
-        else
-        {
+        } else {
             transit = "mode=transit";
         }
         String alternatives = "alternatives=true";
         String constraintParam = "";
         //check if we are using depart by or arrive by and use correct format
-        if(constraint.equals("Depart By") && time > 0)
-        {
+        if (constraint.equals("Depart By") && time > 0) {
             constraintParam = "departure_time=" + time;
-        }
-        else if(constraint.equals("Arrive By") && time > 0)
-        {
+        } else if (constraint.equals("Arrive By") && time > 0) {
             constraintParam = "arrival_time=" + time;
         }
 
@@ -178,17 +185,14 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         RequestQueue queue = Volley.newRequestQueue(this);
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, urlstr,
-            new Response.Listener<String>()
-            {
-                @Override
-                public void onResponse(String response)
-                {
-                    parseDirectionsJson(response);
-                }
-            }, new Response.ErrorListener() {
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        parseDirectionsJson(response);
+                    }
+                }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError error)
-            {
+            public void onErrorResponse(VolleyError error) {
 
             }
         });
@@ -198,8 +202,8 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     ArrayList<Step> stepsArr; //holds the arr of steps for an individual route
-    public void parseDirectionsJson(String result)
-    {
+
+    public void parseDirectionsJson(String result) {
         System.out.println("JSON Parsing is now starting");
         JSONObject json;
 
@@ -207,8 +211,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
             json = new JSONObject(result);
             JSONArray jsonRoutes = json.getJSONArray("routes");
             //iterate through each route that is given
-            for(int j = 0; j < jsonRoutes.length(); j++)
-            {
+            for (int j = 0; j < jsonRoutes.length(); j++) {
                 final boolean finalRoute = (j + 1 >= jsonRoutes.length());
                 stepsArr = new ArrayList<>();
                 JSONObject legs = jsonRoutes.getJSONObject(j).getJSONArray("legs").getJSONObject(0);
@@ -216,8 +219,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                 JSONArray steps = legs.getJSONArray("steps");
 
                 //iterate through each step of the route
-                for (int i = 0; i < steps.length(); i++)
-                {
+                for (int i = 0; i < steps.length(); i++) {
                     final boolean finalNode = (i + 1 >= steps.length());
                     final JSONObject step = steps.getJSONObject(i);
                     LatLng start;
@@ -235,12 +237,9 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                     mode = step.getString("travel_mode");
 
                     int color = Color.BLUE;
-                    if(mode.equals("WALKING"))
-                    {
+                    if (mode.equals("WALKING")) {
                         color = Color.GREEN;
-                    }
-                    else
-                    {
+                    } else {
                         color = Color.BLUE;
                     }
                     polylinePoints = step.getJSONObject("polyline").getString("points");
@@ -248,8 +247,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                     routeline.setVisible(false);
 
                     final Step stepNode;
-                    if (mode.equals("TRANSIT"))
-                    {
+                    if (mode.equals("TRANSIT")) {
                         JSONObject transitDetails = step.getJSONObject("transit_details");
                         JSONObject departureStopStop = transitDetails.getJSONObject("departure_stop");
                         JSONObject endStop = transitDetails.getJSONObject("arrival_stop");
@@ -259,16 +257,13 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                         stepNode = new Step(start, end, mode, routeline, startBus, endBus);
                         stepNode.transitDetails = transitDetails;
 
-                    }
-                    else
-                    {
+                    } else {
                         stepNode = new Step(start, end, mode, routeline);
                     }
                     stepNode.finalNode = finalNode;
                     stepNode.setInstruction(instruction);
                     Marker m1 = addMarker(stepNode.start.latitude, stepNode.start.longitude, stepNode.instruction);
-                    if(finalNode)
-                    {
+                    if (finalNode) {
                         stepNode.instruction = "Arrived";
                     }
                     Marker m2 = addMarker(stepNode.end.latitude, stepNode.end.longitude, stepNode.instruction);
@@ -286,8 +281,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                     StringRequest stringRequest = new StringRequest(Request.Method.GET, urlstr,
                             new Response.Listener<String>() {
                                 @Override
-                                public void onResponse(String response)
-                                {
+                                public void onResponse(String response) {
                                     parseCrimeIndex(response, stepNode);
                                 }
                             }, new Response.ErrorListener() {
@@ -306,7 +300,6 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
             }
 
 
-
             //call final callback to update route adapter
 //            updateRouteAdapter();
 
@@ -317,8 +310,8 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     int numRequests = 0;
-    public void parseCrimeIndex(String result, Step step)
-    {
+
+    public void parseCrimeIndex(String result, Step step) {
         numRequests--;
         int crimerate = Integer.parseInt(result);
         step.setCrimeIndex(crimerate);
@@ -327,22 +320,18 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
 //        {
 //
 //        }
-        if(numRequests == 0)
-        {
+        if (numRequests == 0) {
             finalUpdate();
         }
     }
 
-    public void finalUpdate()
-    {
+    public void finalUpdate() {
         //sum all the crime ratings
-        for(int i = 0; i < routes.size(); i++)
-        {
+        for (int i = 0; i < routes.size(); i++) {
             Route route = routes.get(i);
             ArrayList<Step> steps = route.route;
             int crimeTotal = 0;
-            for(int j = 0; j < steps.size(); j++)
-            {
+            for (int j = 0; j < steps.size(); j++) {
                 Step step = steps.get(j);
                 crimeTotal += step.crimeIndex;
 
@@ -352,11 +341,9 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         }
 
         int indexSafest = 0;
-        for(int i = 0; i < routes.size(); i++)
-        {
+        for (int i = 0; i < routes.size(); i++) {
             Route route = routes.get(i);
-            if(routes.get(indexSafest).crimeRating > route.crimeRating)
-            {
+            if (routes.get(indexSafest).crimeRating > route.crimeRating) {
                 indexSafest = i;
             }
         }
@@ -368,16 +355,14 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
 
     }
 
-    public void updateAdapters()
-    {
+    public void updateAdapters() {
         recycler = (RecyclerView) findViewById(R.id.routes_recycler);
         recycler.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(this);
         recycler.setLayoutManager(layoutManager);
 
         String[] cardData = new String[5 * routes.size()];
-        for(int i = 0; i < routes.size(); i++)
-        {
+        for (int i = 0; i < routes.size(); i++) {
             Route route = routes.get(i);
             int counter = 5 * i;
             cardData[counter] = route.name;
@@ -392,24 +377,20 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         recycler.setAdapter(routeAdapter);
     }
 
-    public void printRoutes()
-    {
-        for(int i = 0; i < routes.size(); i++)
-        {
+    public void printRoutes() {
+        for (int i = 0; i < routes.size(); i++) {
             Route route = routes.get(i);
             ArrayList<Step> steps = route.route;
             System.out.println();
             System.out.println("Start of route " + i + " takes " + route.time + " minutes with crime of " + route.crimeRating);
-            for(Step step: steps)
-            {
+            for (Step step : steps) {
                 System.out.println(step.toString());
             }
         }
     }
 
 
-    public static void displayRoute(int route)
-    {
+    public static void displayRoute(int route) {
         routes.get(lastRoute).hideRoute();
         lastRoute = route;
         routes.get(route).displayRoute();
@@ -417,8 +398,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
 
     }
 
-    public static void hideRoute(int route)
-    {
+    public static void hideRoute(int route) {
         routes.get(route).hideRoute();
     }
 
@@ -457,7 +437,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
 
             @Override
             public byte[] getBody() throws AuthFailureError {
-                String httpPostBody=transitData;
+                String httpPostBody = transitData;
                 // usually you'd have a field with some values you'd want to escape, you need to do it yourself if overriding getBody. here's how you do it
 //                try {
 //                    httpPostBody=httpPostBody+"&randomFieldFilledWithAwkwardCharacters="+URLEncoder.encode("{{%stuffToBe Escaped/","UTF-8");
@@ -475,25 +455,22 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     }
 
     int selectedRoute = 0;
-    public void startNav(View v)
-    {
+
+    public void startNav(View v) {
 
         int index = (int) v.getTag();
         selectedRoute = index;
         //send route to backend
         ArrayList<Step> steps = routes.get(index).route;
-        for(int i = 0; i < steps.size(); i++)
-        {
+        for (int i = 0; i < steps.size(); i++) {
             Step step = steps.get(i);
-            if(step.mode.equals("TRANSIT"))
-            {
+            if (step.mode.equals("TRANSIT")) {
                 postTransitData(step.transitDetails.toString());
             }
         }
     }
 
-    public void wipeView()
-    {
+    public void wipeView() {
         RecyclerView recycle = (RecyclerView) findViewById(R.id.routes_recycler);
         LinearLayout linlay = (LinearLayout) findViewById(R.id.details);
         linlay.removeView(recycle);
@@ -501,18 +478,49 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         invislay.setVisibility(View.VISIBLE);
     }
 
-    public void notifyCircle(View v)
-    {
-        //TODO Send current location.
-        SharedPreferences preferences = getSharedPreferences(TripActivity.MY_PREFERENCES, MODE_PRIVATE);
+
+    public void notifyCircle(View v){
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            System.out.println("Finding Location");
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+        }
         SmsManager smsManager = SmsManager.getDefault();
         for(int i = 0; i < 5; i++){
+            SharedPreferences preferences = getSharedPreferences(TripActivity.MY_PREFERENCES, MODE_PRIVATE);
             String next = preferences.getString("number"+String.valueOf(i), "0");
             if(!next.equals("0") && !next.equals(null)){
-                System.out.println(next);
-                smsManager.sendTextMessage(next, null, "Send Help!", null, null);
+                double lat;
+                double lng;
+                if(mLastLocation == null){
+                    lat = TripActivity.mLastLocation.getLatitude();
+                    lng = TripActivity.mLastLocation.getLongitude();
+                }else {
+                    lat = mLastLocation.getLatitude();
+                    lng = mLastLocation.getLongitude();
+                }
+                String geoUri = "http://maps.google.com/maps?q=loc:" + lat + "," + lng +"(" + "EmergencyContactLocation" + ")";
+                String message = "Send Help! I am currently at Latitude: "+lat
+                        +", Longitude: "+lng+"\n"+geoUri;
+                System.out.println(message);
+                smsManager.sendTextMessage(next, null, message, null, null);
             }
         }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
     }
 }
 

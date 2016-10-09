@@ -98,7 +98,9 @@
         android:layout_height="wrap_content"
         android:text="@string/go"
         android:layout_below="@id/transport_radio"
-        android:onClick="launchRoutes"/>
+        android:onClick="launchRoutes"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:textColor="@color/fontLight" />
 
     <Button
         android:layout_width="match_parent"
@@ -106,5 +108,6 @@
         android:text="@string/notify_circle"
         android:id="@+id/notify_in_trip"
         android:layout_alignParentBottom="true"
-        android:onClick="notifyCircle"/>
+        android:onClick="notify"
+        android:backgroundTint="@color/colorAccent" />
 </RelativeLayout>
