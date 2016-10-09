@@ -33,8 +33,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -42,6 +47,8 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     private GoogleMap mMap;
     private String fromLocation;
     private String toLocation;
+    private long time = 0;
+    private String constraint;
     private static String token;
 
     RecyclerView recycler;
@@ -61,8 +68,24 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         setContentView(R.layout.activity_routes);
         context = this;
         Intent intent = getIntent();
+
         fromLocation = intent.getStringExtra("from");
         toLocation = intent.getStringExtra("to");
+        String timeStr = intent.getStringExtra("time");
+        constraint = intent.getStringExtra("time_constraint");
+
+
+        //convert timeStr to epoch time
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddhh:mmZ", Locale.ENGLISH);
+        try {
+            Date date = sdf.parse(timeStr);
+            time = date.getTime()/1000;
+        }
+        catch (ParseException e) {
+            e.printStackTrace();
+        }
+        System.out.println(constraint + ": " + time);
+
         routes = new ArrayList<>();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -109,7 +132,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     {
         LatLng newMarker = new LatLng(lat, lng);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(newMarker));
-        mMap.moveCamera(CameraUpdateFactory.zoomTo(11));
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(12));
         return mMap.addMarker(new MarkerOptions().position(newMarker).title("New Marker"));
 
     }
@@ -127,8 +150,19 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         String toParam = "destination=" + to;
         String transit = "mode=transit";
         String alternatives = "alternatives=true";
+        String constraintParam = "";
+        //check if we are using depart by or arrive by and use correct format
+        if(constraint.equals("Depart By") && time > 0)
+        {
+            constraintParam = "departure_time=" + time;
+        }
+        else if(constraint.equals("Arrive By") && time > 0)
+        {
+            constraintParam = "arrival_time=" + time;
+        }
+
         String key = "key=AIzaSyC4Z2nrjk3V54cOiGVfEFwYjndbr4uZbaw";
-        String parameters = "?" + fromParam + "&" + toParam + "&" + transit + "&" + alternatives + "&" + key;
+        String parameters = "?" + fromParam + "&" + toParam + "&" + transit + "&" + alternatives + "&" + constraintParam + "&" + key;
         String urlstr = baseUrl + parameters;
         urlstr = urlstr.replace(" ", "+");
         System.out.println(urlstr);
@@ -170,7 +204,9 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
             {
                 final boolean finalRoute = (j + 1 >= jsonRoutes.length());
                 stepsArr = new ArrayList<>();
-                JSONArray steps = jsonRoutes.getJSONObject(j).getJSONArray("legs").getJSONObject(0).getJSONArray("steps");
+                JSONObject legs = jsonRoutes.getJSONObject(j).getJSONArray("legs").getJSONObject(0);
+                String elapsedTime = legs.getJSONObject("duration").getString("text");
+                JSONArray steps = legs.getJSONArray("steps");
 
                 //iterate through each step of the route
                 for (int i = 0; i < steps.length(); i++)
@@ -182,15 +218,27 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                     String mode;
                     String polylinePoints;
 
-                    polylinePoints = step.getJSONObject("polyline").getString("points");
-                    Polyline routeline = mMap.addPolyline(new PolylineOptions().addAll(PolyUtil.decode(polylinePoints)).width(15).color(Color.BLUE));
-                    routeline.setVisible(false);
+
+
                     JSONObject jsonStart = step.getJSONObject("start_location");
                     start = new LatLng(jsonStart.getDouble("lat"), jsonStart.getDouble("lng"));
 
                     JSONObject jsonEnd = step.getJSONObject("end_location");
                     end = new LatLng(jsonEnd.getDouble("lat"), jsonEnd.getDouble("lng"));
                     mode = step.getString("travel_mode");
+
+                    int color = Color.BLUE;
+                    if(mode.equals("WALKING"))
+                    {
+                        color = Color.GREEN;
+                    }
+                    else
+                    {
+                        color = Color.BLUE;
+                    }
+                    polylinePoints = step.getJSONObject("polyline").getString("points");
+                    Polyline routeline = mMap.addPolyline(new PolylineOptions().addAll(PolyUtil.decode(polylinePoints)).width(15).color(color));
+                    routeline.setVisible(false);
 
                     final Step stepNode;
                     if (mode.equals("TRANSIT"))
@@ -241,7 +289,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                     numRequests++;
                     stepsArr.add(stepNode);
                 }
-                Route route = new Route(stepsArr, 10, 0);
+                Route route = new Route(stepsArr, elapsedTime, 0);
                 routes.add(route);
             }
 
@@ -261,7 +309,6 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     {
         numRequests--;
         int crimerate = Integer.parseInt(result);
-        System.out.println("This is what I needed: " + result);
         step.setCrimeIndex(crimerate);
 //        //if this is the final node call another method to sum up values and create the route object
 //        if(step.finalNode)
@@ -276,10 +323,15 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
 
     public void finalUpdate()
     {
+        int indexSafest = 0;
         //sum all the crime ratings
         for(int i = 0; i < routes.size(); i++)
         {
             Route route = routes.get(i);
+            if(routes.get(indexSafest).crimeRating > route.crimeRating)
+            {
+                indexSafest = i;
+            }
             ArrayList<Step> steps = route.route;
             int crimeTotal = 0;
             for(int j = 0; j < steps.size(); j++)
@@ -288,8 +340,10 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                 crimeTotal += step.crimeIndex;
 
             }
-            route.crimeRating = crimeTotal / (double) steps.size();
+            DecimalFormat twoDecimals = new DecimalFormat("#.##");
+            route.crimeRating = Double.valueOf(twoDecimals.format(crimeTotal / (double) steps.size()));
         }
+        routes.get(indexSafest).name = "Safest Route";
         printRoutes();
         updateAdapters();
 
@@ -308,9 +362,9 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         {
             Route route = routes.get(i);
             int counter = 5 * i;
-            cardData[counter] = "Route " + i;
-            cardData[counter + 1] = route.time + " min";
-            cardData[counter + 2] = "Crime Rate: " + route.crimeRating;
+            cardData[counter] = route.name;
+            cardData[counter + 1] = route.time;
+            cardData[counter + 2] = "Crime Rating: " + route.crimeRating;
             cardData[counter + 3] = "Start";
             cardData[counter + 4] = "End";
         }

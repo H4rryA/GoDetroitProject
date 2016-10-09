@@ -81,7 +81,7 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
             Date d = c.getTime();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddhh:mmZ", Locale.ENGLISH);
             tripTime = sdf.format(d);
-            tripTime = tripTime.substring(0, 10) + "T" + tripTime.substring(10);
+//            tripTime = tripTime.substring(0, 10) + "T" + tripTime.substring(10);
         }
 
         @Override
@@ -108,8 +108,9 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
             }
         }
         public void setTime(View view){
-            int hour = Integer.valueOf(tripTime.substring(11,13));
-            int minute = Integer.valueOf(tripTime.substring(14,16));
+            //changes made to accomodate no 'T'
+            int hour = Integer.valueOf(tripTime.substring(10,12));
+            int minute = Integer.valueOf(tripTime.substring(13,15));
             new TimePickerDialog(this, this, hour, minute, true).show();
         }
 
@@ -117,15 +118,12 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             String hourString = String.valueOf(hourOfDay);
             String minuteString = String.valueOf(minute);
-            if(hourOfDay/10 == 0){
-                hourString = String.format("%02d", hourOfDay);
-            }
-            if(minute/10 == 0){
-                minuteString = String.format("%02d", minute);
-            }
+            System.out.println(hourString);
+            hourString = String.format("%02d", hourOfDay);
+            minuteString = String.format("%02d", minute);
             String time = hourString + ":" + minuteString;
             this.timeText.setText(time);
-            tripTime = tripTime.substring(0,11)+time+tripTime.substring(16);
+            tripTime = tripTime.substring(0,10)+time+tripTime.substring(15);
         }
 
         public void launchRoutes(View v){

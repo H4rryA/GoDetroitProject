@@ -12,14 +12,17 @@ public class Route
     public ArrayList<Step> route;
 
     //time needed to complete this route
-    public int time;
+    public String time;
 
     //average crime index
     public double crimeRating;
 
+    //route name
+    public String name = "Alternate Route";
 
 
-    public Route(ArrayList<Step> route, int time, double crimeRating)
+
+    public Route(ArrayList<Step> route, String time, double crimeRating)
     {
         this.route = route;
         this.time = time;
