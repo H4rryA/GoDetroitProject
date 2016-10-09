@@ -76,4 +76,11 @@ router.get('/passengerSchedule', function(req, res, next) {
     })
 })
 
+router.get('/allpassengerSchedule', function(req, res, next) {
+    Stop.find().exec(function(err, stp) {
+      if(err){return next(err);}
+      res.json(stp);
+    })
+})
+
 module.exports = router;
