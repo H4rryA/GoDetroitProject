@@ -12,8 +12,25 @@ var auth = jwt({secret: confsecret});
 router.post('/passengerSchedule', auth, function(req, res, next) {
 
   var newSchedule = new Schedule();
+  var astop = {
+    type: 'arrival',
+    name: req.body.arrival_stop.name,
+    gps: [req.body.arrival_stop.location.lat, req.body.arrival_stop.location.lng],
+    time: new Date(req.body.arrival_time.value * 1000)
+  }
+
+  newSchedule.stops.push(astop);
+  var dstop = {
+    type: 'departure',
+    name: req.body.departure_stop.name,
+    gps: [req.body.departure_stop.location.lat, req.body.departure_stop.location.lng],
+    time: new Date(req.body.departure_time.value * 1000)
+  }
+  newSchedule.stops.push(dstop);
+
+  newSchedule.route = req.body.headsign;
+
   newSchedule.user = req.user._id;
-  newSchedule.transitData = req.body;
   newSchedule.date = new Date();
 
   newSchedule.save(function (err){ //save
@@ -23,7 +40,7 @@ router.post('/passengerSchedule', auth, function(req, res, next) {
 });
 
 router.get('/passengerSchedule', auth, function(req, res, next) {
-    User.findById(req.user._id).populate('schedules').exec(function(err, usr) {
+    Schedule.find().exec(function(err, usr) {
       if(err){return next(err);}
       res.json(usr);
     })

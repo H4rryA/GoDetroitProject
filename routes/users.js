@@ -15,30 +15,30 @@ router.post('/register', function(req, res, next){ //handles a request of post t
   if(!req.body.uid || !req.body.email){ //check all fields are filled
     return res.status(400).json({message: 'Please fill out all fields'});
   }
-  var user = new User();
-  user.uid = req.body.uid;
-  user.email = req.body.email;
-  user.group = req.body.group;
-
-  user.save(function (err){ //save
-    if(err){ return next(err); }
-    return res.json({token: user.generateJWT()}) //creates a JWT
+  User.findOne({ uid : req.body.uid }, function (err, user) { //use mongoose to find user in database
+      if (err) { res.json(err); }
+      if (!user) { //if usr does not exist, create new usr
+        console.log('doesnt exist');
+        var user1 = new User(
+          {
+            uid : req.body.uid,
+            email : req.body.email,
+            group : req.body.group
+          }
+        );
+        user1.save(function (err, user){ //save
+          if(err){ return next(err); }
+          return res.json({msg:'created new account',token: user.generateJWT()}) //creates a JWT
+        });
+      }
+      else{
+        console.log('found usr');
+        return res.json({msg:'logged in account', token: user.generateJWT()}) //return the to passpor
+      }
   });
+
 });
 
-router.post('/login', function(req, res, next){
-  if(!req.body.uid){ //checking fields
-    return res.status(400).json({message: 'Please fill out all fields'});
-  }
-
-  User.findOne({ uid: req.body.uid }, function (err, user) { //use mongoose to find user in database
-    if (err) { res.json(err); }
-    if (!user) {
-      res.json({ message: 'Incorrect uid.' });
-    }
-    return res.json({token: user.generateJWT()}) //return the to passport
-  });
-});
 router.get('/allusers', auth, function(req, res, next) { //get all user
       console.log(req.user);
       validateUserGroup(req, res, "admin", function() { //validate user as admin
@@ -56,5 +56,6 @@ router.delete('/delete', auth, function(req, res, next) { //wipes DB
       })
     })
 })
+
 
 module.exports = router;

@@ -1,5 +1,5 @@
 import csv
-reader = csv.DictReader(open('./dpd.csv'))
+reader = csv.DictReader(open('./dpdbig.csv'))
 
 result = {}
 for row in reader:
@@ -16,6 +16,6 @@ for x in range(len(loc)):
     loc[x] = loc[x].strip('()')
     st = [loc[x] , sofc[x]]
     # print(st)
-    with open('BPData.csv','ab') as mycsvfile:
+    with open('out.csv','ab') as mycsvfile:
         temp = csv.writer(mycsvfile)
-        temp.writerow(st)
+        temp.writerow([loc[x].split()[-2]])
