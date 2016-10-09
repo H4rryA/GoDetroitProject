@@ -22,7 +22,7 @@ public class Step
     public Marker marker2;
     public int crimeIndex;
     public boolean finalNode = false;
-
+    public String instruction;
     //transit-details
     public JSONObject transitDetails;
 
@@ -55,6 +55,11 @@ public class Step
     public void setCrimeIndex(int index)
     {
         crimeIndex = index;
+    }
+
+    public void setInstruction(String instruction)
+    {
+        this.instruction = instruction;
     }
 
     public String toString()

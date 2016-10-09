@@ -36,8 +36,9 @@ public class Route
             Step step = route.get(i);
             step.polyline.setVisible(true);
             step.marker1.setVisible(true);
-            step.marker2.setVisible(true);
+//            step.marker2.setVisible(true);
         }
+        route.get(route.size() - 1).marker2.setVisible(true);
     }
 
     public void hideRoute()
@@ -47,8 +48,9 @@ public class Route
             Step step = route.get(i);
             step.polyline.setVisible(false);
             step.marker1.setVisible(false);
-            step.marker2.setVisible(false);
+//            step.marker2.setVisible(false);
         }
+        route.get(route.size() - 1).marker2.setVisible(false);
     }
 
 }

@@ -128,19 +128,13 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         System.out.println("We are now updating the adapter");
     }
 
-    public Marker addMarker(double lat, double lng)
+    public Marker addMarker(double lat, double lng, String title)
     {
         LatLng newMarker = new LatLng(lat, lng);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(newMarker));
         mMap.moveCamera(CameraUpdateFactory.zoomTo(12));
-        return mMap.addMarker(new MarkerOptions().position(newMarker).title("New Marker"));
+        return mMap.addMarker(new MarkerOptions().position(newMarker).title(title));
 
-    }
-
-    public Marker addStepMarker(Step step)
-    {
-        return addMarker(step.start.latitude, step.start.longitude);
-//        addMarker(step.end.latitude, step.end.longitude);
     }
 
     public void queryRoute(String from, String to)
@@ -217,8 +211,9 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                     LatLng end;
                     String mode;
                     String polylinePoints;
+                    String instruction;
 
-
+                    instruction = step.getString("html_instructions");
 
                     JSONObject jsonStart = step.getJSONObject("start_location");
                     start = new LatLng(jsonStart.getDouble("lat"), jsonStart.getDouble("lng"));
@@ -258,8 +253,13 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                         stepNode = new Step(start, end, mode, routeline);
                     }
                     stepNode.finalNode = finalNode;
-                    Marker m1 = addMarker(stepNode.start.latitude, stepNode.start.longitude);
-                    Marker m2 = addMarker(stepNode.end.latitude, stepNode.end.longitude);
+                    stepNode.setInstruction(instruction);
+                    Marker m1 = addMarker(stepNode.start.latitude, stepNode.start.longitude, stepNode.instruction);
+                    if(finalNode)
+                    {
+                        stepNode.instruction = "Arrived";
+                    }
+                    Marker m2 = addMarker(stepNode.end.latitude, stepNode.end.longitude, stepNode.instruction);
 
                     m1.setVisible(false);
                     m2.setVisible(false);
@@ -403,10 +403,15 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
             Step step = steps.get(i);
             if(step.mode.equals("TRANSIT"))
             {
-                postTransitData(step.transitDetails.toString());
+//                postTransitData(step.transitDetails.toString());
 //                System.out.println("This is the details we are posting\n" + step.transitDetails.toString());
             }
         }
+    }
+
+    public static void hideRoute(int route)
+    {
+        routes.get(route).hideRoute();
     }
 
     public static void postTransitData(final String transitData) {

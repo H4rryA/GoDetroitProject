@@ -60,6 +60,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
+                android:text="Choose Route"
                 android:visibility="gone" />
         </RelativeLayout>
     </android.support.v7.widget.CardView>
