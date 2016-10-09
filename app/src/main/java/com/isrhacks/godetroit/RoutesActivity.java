@@ -323,15 +323,10 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
 
     public void finalUpdate()
     {
-        int indexSafest = 0;
         //sum all the crime ratings
         for(int i = 0; i < routes.size(); i++)
         {
             Route route = routes.get(i);
-            if(routes.get(indexSafest).crimeRating > route.crimeRating)
-            {
-                indexSafest = i;
-            }
             ArrayList<Step> steps = route.route;
             int crimeTotal = 0;
             for(int j = 0; j < steps.size(); j++)
@@ -343,7 +338,18 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
             DecimalFormat twoDecimals = new DecimalFormat("#.##");
             route.crimeRating = Double.valueOf(twoDecimals.format(crimeTotal / (double) steps.size()));
         }
+
+        int indexSafest = 0;
+        for(int i = 0; i < routes.size(); i++)
+        {
+            Route route = routes.get(i);
+            if(routes.get(indexSafest).crimeRating > route.crimeRating)
+            {
+                indexSafest = i;
+            }
+        }
         routes.get(indexSafest).name = "Safest Route";
+
         printRoutes();
         updateAdapters();
 
@@ -396,17 +402,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         lastRoute = route;
         routes.get(route).displayRoute();
 
-        //send route to backend
-        ArrayList<Step> steps = routes.get(lastRoute).route;
-        for(int i = 0; i < steps.size(); i++)
-        {
-            Step step = steps.get(i);
-            if(step.mode.equals("TRANSIT"))
-            {
-//                postTransitData(step.transitDetails.toString());
-//                System.out.println("This is the details we are posting\n" + step.transitDetails.toString());
-            }
-        }
+
     }
 
     public static void hideRoute(int route)
@@ -468,6 +464,18 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     public void startNav(View v)
     {
 
+        System.out.println("BITCH PLEASE " + v.getTag());
+        int index = (int) v.getTag();
+        //send route to backend
+        ArrayList<Step> steps = routes.get(index).route;
+        for(int i = 0; i < steps.size(); i++)
+        {
+            Step step = steps.get(i);
+            if(step.mode.equals("TRANSIT"))
+            {
+                postTransitData(step.transitDetails.toString());
+            }
+        }
     }
 }
 

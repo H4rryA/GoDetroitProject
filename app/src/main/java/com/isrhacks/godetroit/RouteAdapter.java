@@ -72,6 +72,7 @@ class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> {
                     holder.startStop.setVisibility(View.VISIBLE);
                     holder.endStop.setVisibility(View.VISIBLE);
                     holder.startRoute.setVisibility(View.VISIBLE);
+                    holder.startRoute.setTag(position);
                     expandedView = true;
                 }else{
                     RoutesActivity.hideRoute(position);
