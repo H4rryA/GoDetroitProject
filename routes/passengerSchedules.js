@@ -14,21 +14,21 @@ router.post('/passengerSchedule', auth, function(req, res, next) {
   var newSchedule = new Schedule();
   var astop = {
     type: 'arrival',
-    name: req.body.arrival_stop.name,
-    gps: [req.body.arrival_stop.location.lat, req.body.arrival_stop.location.lng],
-    time: new Date(req.body.arrival_time.value * 1000)
+    name: req.body.transitData.arrival_stop.name,
+    gps: [req.body.transitData.arrival_stop.location.lat, req.body.arrival_stop.location.lng],
+    time: new Date(req.body.transitData.arrival_time.value * 1000)
   }
 
   newSchedule.stops.push(astop);
   var dstop = {
     type: 'departure',
-    name: req.body.departure_stop.name,
-    gps: [req.body.departure_stop.location.lat, req.body.departure_stop.location.lng],
-    time: new Date(req.body.departure_time.value * 1000)
+    name: req.body.transitData.departure_stop.name,
+    gps: [req.body.transitData.departure_stop.location.lat, req.body.departure_stop.location.lng],
+    time: new Date(req.body.transitData.departure_time.value * 1000)
   }
   newSchedule.stops.push(dstop);
 
-  newSchedule.route = req.body.headsign;
+  newSchedule.route = req.body.transitData.headsign;
 
   newSchedule.user = req.user._id;
   newSchedule.date = new Date();
