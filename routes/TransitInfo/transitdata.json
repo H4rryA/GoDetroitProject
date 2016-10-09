@@ -1,0 +1,46 @@
+"transit_details" : {
+   "arrival_stop" : {
+      "location" : {
+         "lat" : 42.342167,
+         "lng" : -83.058514
+      },
+      "name" : "Cass @ Temple"
+   },
+   "arrival_time" : {
+      "text" : "8:10pm",
+      "time_zone" : "America/New_York",
+      "value" : 1475971849
+   },
+   "departure_stop" : {
+      "location" : {
+         "lat" : 42.332779,
+         "lng" : -83.052317
+      },
+      "name" : "Rosa Parks Transit 34 EB"
+   },
+   "departure_time" : {
+      "text" : "8:05pm",
+      "time_zone" : "America/New_York",
+      "value" : 1475971500
+   },
+   "headsign" : "31 Mack Eastbound",
+   "line" : {
+      "agencies" : [
+         {
+            "name" : "Detroit Department of Transportation",
+            "phone" : "1 (313) 933-1300",
+            "url" : "http://www.ridedetroittransit.com/"
+         }
+      ],
+      "color" : "#006600",
+      "name" : "Mack",
+      "short_name" : "031",
+      "text_color" : "#ffffff",
+      "vehicle" : {
+         "icon" : "//maps.gstatic.com/mapfiles/transit/iw2/6/bus2.png",
+         "name" : "Bus",
+         "type" : "BUS"
+      }
+   },
+   "num_stops" : 3
+},

@@ -27,12 +27,12 @@ router.post('/register', function(req, res, next){ //handles a request of post t
 });
 
 router.post('/login', function(req, res, next){
-  if(!req.body.uid /*|| !req.body.password*/){ //checking fields
+  if(!req.body.uid){ //checking fields
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
   User.findOne({ uid: req.body.uid }, function (err, user) { //use mongoose to find user in database
-    if (err) { return done(err); }
+    if (err) { res.json(err); }
     if (!user) {
       res.json({ message: 'Incorrect uid.' });
     }

@@ -12,7 +12,7 @@ callsocrata.callsocrata = function(lat, long, rad, date_range,callback) {
     'url': 'https://data.detroitmi.gov/resource/i9ph-uyrp.json', //
     'qs': {
       '$where' : "within_circle(location, "+lat+", "+long+", "+rad+") " +
-      "AND offensedescription in('THEFT', 'ROBBERY', 'INTIMIDATION')" +
+      "AND offensedescription in('THEFT', 'ROBBERY', 'INTIMIDATION', 'HOMICIDE', 'SHOOTING', 'ASSAULT', 'BURGLARY')" +
       "AND incidentdate between '"+$starting.toISOString().slice(0, 19)+"' and '"+$today.toISOString().slice(0, 19)+"'",
 
       '$select' : 'count(caseid)',//setting parameters, counting cases only

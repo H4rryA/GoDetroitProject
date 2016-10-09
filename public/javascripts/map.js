@@ -5,21 +5,19 @@ function loadApi() {
 }
 
 function initialize() {
+  var isMobile = (navigator.userAgent.toLowerCase().indexOf('android') > -1) ||
+    (navigator.userAgent.match(/(iPod|iPhone|iPad|BlackBerry|Windows Phone|iemobile)/));
+  if (isMobile) {
+    var viewport = document.querySelector("meta[name=viewport]");
+    viewport.setAttribute('content', 'initial-scale=1.0, user-scalable=no');
+  }
   var mapDiv = document.getElementById('map');
+
   map = new google.maps.Map(mapDiv, {
-    center: new google.maps.LatLng(42.350900619879376, -83.05313354492188),
-    zoom: 11,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
+    center: new google.maps.LatLng(42.365073378104945, -83.07137716674805),
+    zoom: 12,
   });
-
-  google.maps.event.addListener(map, 'click', function(event) {
-    var parameters = 'lat='+event.latLng.lat()+'&long='+event.latLng.lng()+'&rad=500';
-    httpGetAsync('/crimes', parameters, function(response){
-      addMarker(event.latLng, map, response);
-    });
-  });
-
-  var query = 'select col0, col1 from 1m_Ncb4c9pb8j4W0S3-Qudf2cgVFODVac9bZUqsaI limit 1000';
+  var query = 'select col0, col1 from 1cqYh4TdsUCtFF5bgqLOn6W5rfuE1A5pa64O2loxd limit 1000';
   var request = gapi.client.fusiontables.query.sqlGet({ sql: query });
   request.execute(function(response) {
     onDataFetched(response);
@@ -36,38 +34,15 @@ function onDataFetched(response) {
 }
 
 function extractLocations(rows) {
-  // Patterns for latitude/longitude in a single field, separated by a space
-  // or comma, with optional north/south/east/west orientation
-  var numberPattern = '([+-]?\\d+(?:\\.\\d*)?)';
-  var latPattern = numberPattern + '\\s*([NS])?';
-  var lngPattern = numberPattern + '\\s*([EW])?';
-  var latLngPattern = latPattern + '(?:\\s+|\\s*,\\s*)' + lngPattern;
-  var northRegexp = /N/i;
-  var eastRegexp = /E/i;
-  var parseRegexp = new RegExp(latLngPattern, 'i');
   var locations = [];
   for (var i = 0; i < rows.length; ++i) {
     var row = rows[i];
     if (row[0]) {
-      var parts = row[0].match(parseRegexp);
-      if (parts) {
-        var latString = parts[1];
-        var latOrientation = parts[2];
-        var lngString = parts[3];
-        var lngOrientation = parts[4];
-        var lat = parseFloat(latString);
-        var lng = parseFloat(lngString);
-        if (latOrientation) {
-          var latAdjust = northRegexp.test(latOrientation) ? 1 : -1;
-          lat = latAdjust * Math.abs(lat);
-        }
-        if (lngOrientation) {
-          var lngAdjust = eastRegexp.test(lngOrientation) ? 1 : -1;
-          lng = lngAdjust * Math.abs(lng);
-        }
+      var lat = row[0];
+      var lng = row[1];
+      if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
         var latLng = new google.maps.LatLng(lat, lng);
-        var weight = row[1];
-        locations.push({ location: latLng, weight: parseFloat(weight) });
+        locations.push(latLng);
       }
     }
   }
@@ -91,7 +66,7 @@ function drawHeatmap(locations) {
        'rgba(255,0,0,1)'
      ],
      opacity: 0.6,
-     radius: 39,
+     radius: 22,
      data: locations
   });
   heatmap.setMap(map);
@@ -106,8 +81,6 @@ function addMarker(location, map, crime_index) {
     map: map
   });
 }
-
-google.maps.event.addDomListener(window, 'load', initialize);
 //http calls for marker points
 function httpGetAsync(theUrl, parameters, callback)
 {
@@ -122,3 +95,10 @@ function httpGetAsync(theUrl, parameters, callback)
 }
 
 google.maps.event.addDomListener(window, 'load', loadApi);
+
+google.maps.event.addListener(map, 'click', function(event) {
+  var parameters = 'lat='+event.latLng.lat()+'&long='+event.latLng.lng()+'&rad=500';
+  httpGetAsync('/crimes', parameters, function(response){
+    addMarker(event.latLng, map, response);
+  });
+});

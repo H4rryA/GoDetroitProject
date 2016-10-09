@@ -11,23 +11,8 @@ var UserSchema = new mongoose.Schema({
   uid: String,
   email: String,
   group: String,
+  schedules: [{type: Schema.Types.ObjectId, ref:'Schedule'}]
 });
-
-// UserSchema.methods.setGroup = function (email) {
-//   if(email.split("@")[1] == 'godetroid.com')
-//     this.group = 'driver';
-//   else
-//     this.group = 'user';
-// };
-
-// UserSchema.methods.setPassword = function(password){ //creating password
-//   console.log('hello');
-//   this.password = password;
-// };
-//
-// UserSchema.methods.validPassword = function(password) { //validating password
-//   return this.password === password;
-// };
 
 UserSchema.methods.generateJWT = function() { //creating jwt after valid pw
 
@@ -39,6 +24,7 @@ UserSchema.methods.generateJWT = function() { //creating jwt after valid pw
   return jwt.sign({
     _id: this._id, //payload
     uid: this.uid,
+    email:this.email,
     group:this.group,
     exp: parseInt(exp.getTime() / 1000), //expiration time
   }, secret);
