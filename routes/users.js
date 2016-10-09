@@ -12,6 +12,7 @@ var User = mongoose.model('User');
 var validateUserGroup = require('./validation').validateUserGroup;
 
 router.post('/register', function(req, res, next){ //handles a request of post to /register
+  console.log('here0');
   if(!req.body.uid || !req.body.email){ //check all fields are filled
     return res.status(400).json({message: 'Please fill out all fields'});
   }

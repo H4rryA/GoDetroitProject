@@ -10,7 +10,7 @@ var jwt = require('express-jwt');
 var auth = jwt({secret: confsecret});
 
 router.post('/passengerSchedule', auth, function(req, res, next) {
-
+  console.log('here1');
   var newSchedule = new Schedule();
   var astop = {
     type: 'arrival',
@@ -35,6 +35,7 @@ router.post('/passengerSchedule', auth, function(req, res, next) {
 
   newSchedule.save(function (err){ //save
     if(err){ return next(err); }
+    console.log('here2')
     return res.json(newSchedule) //creates a JWT
   });
 });
