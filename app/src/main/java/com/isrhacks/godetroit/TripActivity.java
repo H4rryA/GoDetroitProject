@@ -158,7 +158,7 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
                 intent.putExtra("to", toLocation);
                 intent.putExtra("time_constraint", spinner_choice);
                 intent.putExtra("time", tripTime);
-                intent.putExtra("tranposrtation", transport_choice);
+                intent.putExtra("transportation", transport_choice);
                 startActivity(intent);
             }
         }
