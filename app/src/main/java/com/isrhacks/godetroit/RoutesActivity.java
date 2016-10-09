@@ -350,7 +350,7 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
             if(step.mode.equals("TRANSIT"))
             {
                 postTransitData(step.transitDetails.toString());
-                System.out.println("This is the details we are posting\n" + step.transitDetails.toString());
+//                System.out.println("This is the details we are posting\n" + step.transitDetails.toString());
             }
         }
     }
@@ -366,12 +366,15 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                System.out.println(error.toString());
+                System.out.println(error.getMessage());
                 //    postUsernameResponse.requestEndedWithError(error);
             }
         }) {
             @Override
             protected Map<String, String> getParams() {
                 Map<String, String> params = new HashMap<String, String>();
+//                params.
                 params.put("transitData", transitData);
                 return params;
             }
@@ -379,9 +382,24 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
-                params.put("Content-Type", "application/json");
                 params.put("Authorization", "bearer " + token);
+                params.put("Content-Type", "application/json");
                 return params;
+            }
+
+            @Override
+            public byte[] getBody() throws AuthFailureError {
+                String httpPostBody=transitData;
+                // usually you'd have a field with some values you'd want to escape, you need to do it yourself if overriding getBody. here's how you do it
+//                try {
+//                    httpPostBody=httpPostBody+"&randomFieldFilledWithAwkwardCharacters="+URLEncoder.encode("{{%stuffToBe Escaped/","UTF-8");
+//                } catch (UnsupportedEncodingException exception) {
+//                    Log.e("ERROR", "exception", exception);
+//                    // return null and don't pass any POST string if you encounter encoding error
+//                    return null;
+//                }
+                System.out.println(httpPostBody);
+                return httpPostBody.getBytes();
             }
 
         };

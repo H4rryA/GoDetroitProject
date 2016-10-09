@@ -60,14 +60,14 @@ class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, final int position) {
+        //TODO:FIXTHISCLOSINGOPENINGMESSMONKEYS
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
-
-                RoutesActivity.displayRoute(position);
                 TransitionManager.beginDelayedTransition(holder.cardView);
                 if(!expandedView) {
+                    RoutesActivity.displayRoute(position);
                     holder.crimeView.setVisibility(View.VISIBLE);
                     holder.startStop.setVisibility(View.VISIBLE);
                     holder.endStop.setVisibility(View.VISIBLE);
