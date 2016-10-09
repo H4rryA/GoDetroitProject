@@ -9,7 +9,7 @@ var secret = process.env.SECRET;
 // set up a mongoose model and pass it using module.exports
 var scheduleSchema = new mongoose.Schema({
   user : {type: Schema.Types.ObjectId, ref: 'User'},
-  stops: [],
+  stops: [{type: Schema.Types.ObjectId, ref: 'Stop'}],
   route: String,
   date: Date
 });

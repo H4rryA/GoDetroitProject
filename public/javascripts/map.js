@@ -1,4 +1,7 @@
 var map;
+var heatmap;
+var clickmarkers = [];
+var hidemarker = false;
 
 function loadApi() {
   gapi.client.load('fusiontables', 'v1', initialize);
@@ -32,6 +35,30 @@ function initialize() {
   });
 }
 
+function getRiders() {
+  var parameters = 'time='+time
+  httpGetAsync('/passengerSchedules')
+}
+
+function setMapOnAll(map) {
+        for (var i = 0; i < clickmarkers.length; i++) {
+          clickmarkers[i].setMap(map);
+        }
+      }
+
+function clearMarkers() {
+        if(hidemarker == false){
+          setMapOnAll(null);
+          heatmap.setMap(null);
+          hidemarker = true;
+        }
+        else {
+          setMapOnAll(map);
+          heatmap.setMap(map);
+          hidemarker = false;
+        }
+      }
+
 function onDataFetched(response) {
   if (response.error) {
     alert('Unable to fetch data. ' + response.error.message +
@@ -58,7 +85,7 @@ function extractLocations(rows) {
 }
 
 function drawHeatmap(locations) {
-  var heatmap = new google.maps.visualization.HeatmapLayer({
+  heatmap = new google.maps.visualization.HeatmapLayer({
      dissipating: true,
      gradient: [
        'rgba(102,255,0,0)',
@@ -88,10 +115,10 @@ function addMarker(location, map, crime_index) {
     label: crime_index,
     map: map
   });
+  clickmarkers.push(marker);
 }
 //http calls for marker points
-function httpGetAsync(theUrl, parameters, callback)
-{
+function httpGetAsync(theUrl, parameters, callback){
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
