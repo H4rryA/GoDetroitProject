@@ -28,10 +28,13 @@
             android:textColor="@android:color/white"
             android:textSize="20sp"
             android:text="Details"/>
+
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/routes_recycler" />
+
+
 
     </LinearLayout>
 </LinearLayout>

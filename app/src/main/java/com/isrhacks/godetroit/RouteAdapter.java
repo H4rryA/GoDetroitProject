@@ -59,11 +59,13 @@ class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.ViewHolder> {
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         holder.cardView.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View v) {
+
+                RoutesActivity.displayRoute(position);
                 TransitionManager.beginDelayedTransition(holder.cardView);
                 if(!expandedView) {
                     holder.crimeView.setVisibility(View.VISIBLE);
