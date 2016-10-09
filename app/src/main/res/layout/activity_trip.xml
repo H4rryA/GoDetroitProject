@@ -66,11 +66,38 @@
             android:text="12:00"
             android:onClick="setTime"/>
     </LinearLayout>
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/time_layout"
+        android:id="@+id/transport_radio">
+        <RadioButton android:id="@+id/radio_transit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Transit"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/radio_walking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Walking"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/radio_bicycling"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bicycling"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/radio_driving"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Driving"
+            android:onClick="onRadioButtonClicked"/>
+    </RadioGroup>
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/go"
-        android:layout_below="@id/time_layout"
+        android:layout_below="@id/transport_radio"
         android:onClick="launchRoutes"/>
 
     <Button

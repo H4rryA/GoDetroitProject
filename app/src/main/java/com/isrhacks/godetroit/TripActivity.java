@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -61,6 +62,7 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
         String tripTime;
         TextView timeText;
         String spinner_choice;
+        String transport_choice;
         GoogleApiClient mGoogleApiClient;
 
         @Override
@@ -68,11 +70,11 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_trip);
             Spinner spinner = (Spinner) findViewById(R.id.time_spinner);
-            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+            ArrayAdapter<CharSequence> spinner_adapter = ArrayAdapter.createFromResource(this,
                     R.array.time_array, android.R.layout.simple_spinner_item);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner.setAdapter(adapter);
-            ((Spinner) findViewById(R.id.time_spinner)).setOnItemSelectedListener(this);
+            spinner_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(spinner_adapter);
+            spinner.setOnItemSelectedListener(this);
             timeText = (TextView) findViewById(R.id.time_text);
 
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -114,6 +116,12 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
             return super.onOptionsItemSelected(item);
             }
         }
+
+        public void onRadioButtonClicked(View v){
+            RadioButton r = (RadioButton) v;
+            transport_choice = r.getText().toString();
+        }
+
         public void setTime(View view){
             //changes made to accomodate no 'T'
             int hour = Integer.valueOf(tripTime.substring(10,12));
@@ -150,6 +158,7 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
                 intent.putExtra("to", toLocation);
                 intent.putExtra("time_constraint", spinner_choice);
                 intent.putExtra("time", tripTime);
+                intent.putExtra("tranposrtation", transport_choice);
                 startActivity(intent);
             }
         }
@@ -222,7 +231,8 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
     }
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        spinner_choice = parent.getItemAtPosition(position).toString();
+            spinner_choice = parent.getItemAtPosition(position).toString();
+        System.out.println(spinner_choice);
     }
 
     @Override
