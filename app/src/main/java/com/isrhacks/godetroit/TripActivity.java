@@ -7,9 +7,14 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -79,6 +84,29 @@ public class TripActivity extends AppCompatActivity implements GoogleApiClient.O
             tripTime = tripTime.substring(0, 10) + "T" + tripTime.substring(10);
         }
 
+        @Override
+        public boolean onCreateOptionsMenu(Menu menu){
+            super.onCreateOptionsMenu(menu);
+            System.out.println("Create Menu");
+            MenuInflater menuInflater = getMenuInflater();
+            menuInflater.inflate(R.menu.toolbar, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            // Handle item selection
+            switch (item.getItemId()) {
+                case R.id.action_settings:
+                    return true;
+                case R.id.circle_settings:
+                    Intent intent = new Intent(this, CircleSettingsActivity.class);
+                    startActivity(intent);
+                    return true;
+                default:
+            return super.onOptionsItemSelected(item);
+            }
+        }
         public void setTime(View view){
             int hour = Integer.valueOf(tripTime.substring(11,13));
             int minute = Integer.valueOf(tripTime.substring(14,16));
