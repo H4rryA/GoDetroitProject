@@ -8,7 +8,7 @@ var stopSchema = new mongoose.Schema({
   name: String,
   gps: [],
   time: Date,
-  count : {type: Number, default:0}
+  count : {type: Number, default:1}
   });
 
 stopSchema.methods.upcount = function(cb) {

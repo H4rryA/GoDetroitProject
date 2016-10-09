@@ -64,12 +64,12 @@ router.post('/passengerSchedule', auth, function(req, res, next) {
 //input date + 10 min
 //input date - 10 min
 
-router.get('/passengerSchedule', auth, function(req, res, next) {
+router.get('/passengerSchedule', function(req, res, next) {
     t1 = req.query.time;
     t2 = t1
-    Stop.find().exec(function(err, usr) {
+    Stop.find().exec(function(err, stp) {
       if(err){return next(err);}
-      res.json(usr);
+      res.json(stp);
     })
 })
 

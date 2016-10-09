@@ -1,6 +1,7 @@
 var map;
 var heatmap;
-var clickmarkers = [];
+var click_markers = [];
+var rider_markers = [];
 var hidemarker = false;
 
 function loadApi() {
@@ -23,10 +24,13 @@ function initialize() {
 
   google.maps.event.addListener(map, 'click', function(event) {
     var parameters = 'lat='+event.latLng.lat()+'&long='+event.latLng.lng()+'&rad=500';
-    httpGetAsync('/crimes', parameters, function(response){
-      addMarker(event.latLng, map, response);
+    httpGetAsync('/crimes?', parameters, function(response){
+      console.log(response);
+      addMarker(event.latLng, response);
     });
   });
+
+  httpGetRiders();
 
   var query = 'select col0, col1 from 1zHCgMcx-VnSvSATgylPUvUidXih50QBHxP0lAGZP limit 1000';
   var request = gapi.client.fusiontables.query.sqlGet({ sql: query });
@@ -35,14 +39,9 @@ function initialize() {
   });
 }
 
-function getRiders() {
-  var parameters = 'time='+time
-  httpGetAsync('/passengerSchedules')
-}
-
 function setMapOnAll(map) {
-        for (var i = 0; i < clickmarkers.length; i++) {
-          clickmarkers[i].setMap(map);
+        for (var i = 0; i < click_markers.length; i++) {
+          click_markers[i].setMap(map);
         }
       }
 
@@ -107,15 +106,15 @@ function drawHeatmap(locations) {
   heatmap.setMap(map);
 }
 
-function addMarker(location, map, crime_index) {
+function addMarker(location, num) {
   // Add the marker at the clicked location, and add the next-available label
   // from the array of alphabetical characters.
   var marker = new google.maps.Marker({
     position: location,
-    label: crime_index,
+    label: num,
     map: map
   });
-  clickmarkers.push(marker);
+  click_markers.push(marker);
 }
 //http calls for marker points
 function httpGetAsync(theUrl, parameters, callback){
@@ -125,8 +124,23 @@ function httpGetAsync(theUrl, parameters, callback){
             console.log(xmlHttp.responseText);
             callback(xmlHttp.responseText);
     }
-    xmlHttp.open("GET", theUrl+'?'+parameters, true); // true for asynchronous
+    xmlHttp.open("GET", theUrl+parameters, true); // true for asynchronous
     xmlHttp.send(null);
 }
+
+function httpGetRiders() {
+  var parameters = ''
+  httpGetAsync('/passengerSchedule', parameters, populateDOM)
+}
+
+function populateDOM(stops) {
+  stops = JSON.parse(stops);
+  for(var j = 0 ; j < stops.length ; j++){
+    console.log(stops[j].count);
+    p = new google.maps.LatLng(stops[j].gps[0], stops[j].gps[1])
+    addMarker(p, ""+stops[j].count+"")
+  }
+}
+
 
 google.maps.event.addDomListener(window, 'load', loadApi);
