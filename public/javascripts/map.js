@@ -17,7 +17,15 @@ function initialize() {
     center: new google.maps.LatLng(42.365073378104945, -83.07137716674805),
     zoom: 12,
   });
-  var query = 'select col0, col1 from 1cqYh4TdsUCtFF5bgqLOn6W5rfuE1A5pa64O2loxd limit 1000';
+
+  google.maps.event.addListener(map, 'click', function(event) {
+    var parameters = 'lat='+event.latLng.lat()+'&long='+event.latLng.lng()+'&rad=500';
+    httpGetAsync('/crimes', parameters, function(response){
+      addMarker(event.latLng, map, response);
+    });
+  });
+
+  var query = 'select col0, col1 from 1zHCgMcx-VnSvSATgylPUvUidXih50QBHxP0lAGZP limit 1000';
   var request = gapi.client.fusiontables.query.sqlGet({ sql: query });
   request.execute(function(response) {
     onDataFetched(response);
@@ -66,7 +74,7 @@ function drawHeatmap(locations) {
        'rgba(255,0,0,1)'
      ],
      opacity: 0.6,
-     radius: 22,
+     radius: 30,
      data: locations
   });
   heatmap.setMap(map);
@@ -95,10 +103,3 @@ function httpGetAsync(theUrl, parameters, callback)
 }
 
 google.maps.event.addDomListener(window, 'load', loadApi);
-
-google.maps.event.addListener(map, 'click', function(event) {
-  var parameters = 'lat='+event.latLng.lat()+'&long='+event.latLng.lng()+'&rad=500';
-  httpGetAsync('/crimes', parameters, function(response){
-    addMarker(event.latLng, map, response);
-  });
-});
