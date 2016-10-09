@@ -25,7 +25,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/from_hint"
         android:id="@+id/from_input"
-        android:text="42.333309, -83.051193"
+        android:text="500 Temple Street Detroit Michigan"
         android:textSize="20sp"/>
     </LinearLayout>
     <LinearLayout
@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/to_hint"
             android:id="@+id/to_input"
-            android:text="42.341481, -83.061014"
+            android:text="8350 Dix Avenue, Detroit, Michigan"
             android:textSize="20sp"/>
     </LinearLayout>
     <LinearLayout

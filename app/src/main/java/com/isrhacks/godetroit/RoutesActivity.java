@@ -66,6 +66,9 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
     private String transportMode;
     private static String token;
 
+    private int primaryColor;
+    private int primaryAccent;
+
     RecyclerView recycler;
     LinearLayoutManager layoutManager;
     RouteAdapter routeAdapter;
@@ -123,6 +126,9 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+
+        primaryColor = getResources().getColor(R.color.colorPrimary);
+        primaryAccent = getResources().getColor(R.color.colorAccent);
     }
 
 
@@ -237,11 +243,12 @@ public class RoutesActivity extends AppCompatActivity implements OnMapReadyCallb
                     end = new LatLng(jsonEnd.getDouble("lat"), jsonEnd.getDouble("lng"));
                     mode = step.getString("travel_mode");
 
-                    int color = Color.BLUE;
+                    int color;
+
                     if (mode.equals("WALKING")) {
-                        color = Color.GREEN;
+                        color = primaryAccent;
                     } else {
-                        color = Color.BLUE;
+                        color = primaryColor;
                     }
                     polylinePoints = step.getJSONObject("polyline").getString("points");
                     Polyline routeline = mMap.addPolyline(new PolylineOptions().addAll(PolyUtil.decode(polylinePoints)).width(15).color(color));
