@@ -28,7 +28,7 @@ function initialize() {
     var parameters = 'lat='+event.latLng.lat()+'&long='+event.latLng.lng()+'&rad=500';
     httpGetAsync('/crimes?', parameters, function(response){
       console.log(response);
-      addMarker(event.latLng, 10*(response/15), click_markers);
+      addMarker(event.latLng, ""+(10*(response/15))+"", click_markers);
     });
   });
 
