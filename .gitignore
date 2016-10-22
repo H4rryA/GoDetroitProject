@@ -1,10 +1,17 @@
 *.iml
-.gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
-/.idea/*
+frontend/.gradle
+frontend/local.properties
+frontend/.idea/workspace.xml
+frontend/.idea/libraries
+frontend/.idea/*
 .DS_Store
-/build
-/captures
-.externalNativeBuild
+frontend/build
+frontend/captures
+frontend/.externalNativeBuild
+
+backend/node_modules
+
+# Elastic Beanstalk Files
+backend/.elasticbeanstalk/*
+backend/!.elasticbeanstalk/*.cfg.yml
+backend/!.elasticbeanstalk/*.global.yml
