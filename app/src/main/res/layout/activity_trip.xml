@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.isrhacks.godetroit.TripActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/from_layout"
+        android:padding="4dp">
+    <TextView
+        android:layout_height="wrap_content"
+        android:text="@string/from_string"
+        android:textSize="24sp"
+        android:id="@+id/from"
+        android:layout_width="65dp" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/from_hint"
+        android:id="@+id/from_input"
+        android:text="500 Temple Street Detroit Michigan"
+        android:textSize="20sp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/to_layout"
+        android:padding="4dp"
+        android:layout_below="@+id/from_layout"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+        <TextView
+            android:layout_height="wrap_content"
+            android:text="@string/to_string"
+            android:textSize="24sp"
+            android:id="@+id/to"
+            android:layout_width="65dp" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/to_hint"
+            android:id="@+id/to_input"
+            android:text="8350 Dix Avenue, Detroit, Michigan"
+            android:textSize="20sp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/to_layout"
+        android:padding="4dp"
+        android:id="@+id/time_layout">
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/time_spinner" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/time_text"
+            android:clickable="true"
+            android:text="12:00"
+            android:onClick="setTime"
+            android:textSize="20sp" />
+    </LinearLayout>
+    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@id/time_layout"
+        android:id="@+id/transport_radio"
+        android:checkedButton="@+id/radio_transit"
+        android:padding="4dp">
+        <RadioButton android:id="@+id/radio_transit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Transit"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/radio_walking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Walking"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/radio_bicycling"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bicycling"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/radio_driving"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Driving"
+            android:onClick="onRadioButtonClicked"/>
+    </RadioGroup>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/go"
+        android:layout_below="@id/transport_radio"
+        android:onClick="launchRoutes"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:textColor="@color/fontLight"
+        android:padding="4dp"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/notify_circle"
+        android:id="@+id/notify_in_trip"
+        android:layout_alignParentBottom="true"
+        android:onClick="notify"
+        android:backgroundTint="@color/colorAccent" />
+
+</RelativeLayout>

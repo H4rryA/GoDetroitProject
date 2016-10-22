@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "261330307475",
+    "project_id": "firebase-godetroitandroid2"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:261330307475:android:9911d41de1c5595e",
+        "android_client_info": {
+          "package_name": "com.isrhacks.godetroit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "261330307475-0iu62ibednhrbahmkc8vt8ibpmkemtor.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.isrhacks.godetroit",
+            "certificate_hash": "5968BED5D33758963645F7E07D982BF7BBC40652"
+          }
+        },
+        {
+          "client_id": "261330307475-n8b941at1jlqbhb8egfbmik8lu71n583.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCF_H3vLJ7SUluCI4rArVISo5IHKeiZ_8c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
