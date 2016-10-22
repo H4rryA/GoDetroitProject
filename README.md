@@ -2,6 +2,8 @@
 This fullstack app was built at MHacks8 and provides a suite of features to make traveling safer and more reliable in Detroit.
 
 ## Mobile App
+<img src="https://github.com/jordanwu97/GoDetroitProject/blob/master/frontend/screenshots/start.jpg" width="250">
+<img src="https://github.com/jordanwu97/GoDetroitProject/blob/master/frontend/screenshots/routes.jpg" width="250">
 
 ## Key Features
 * Safer routes for travelers
