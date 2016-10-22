@@ -1,7 +1,7 @@
-# GoDetroitProject
+# Go Detroit Project
+This fullstack app was built at MHacks8 and provides a suite of features to make traveling safer and more reliable in Detroit.
 
-## Go Detroit Mobile App
-This mobile app was built at MHacks8 and provides a suite of features to make traveling safer and more reliable in Detroit.
+## Mobile App
 
 ## Key Features
 * Safer routes for travelers
@@ -9,7 +9,7 @@ This mobile app was built at MHacks8 and provides a suite of features to make tr
 * Instantly send text to emergency contacts at the press of a button
 
 ### Safer Routes
-Utilizing the open data portal for crime reports, a crime heat map of the Detroit Area was constructed and an api was built
+Utilizing the open data portal for crime reports, a crime heat map of the Detroit Area was constructed with Google Maps Heat Map overlay and an api was built
 to query a latitude and longitude for a relativistic crime rating. Using this data, we could give each route generated
 by the Google Directions API a "crime rating". Using that rating, we rank each route by safety.
 
@@ -21,6 +21,7 @@ need to get off at or get on at.
 ### Emergency Contacts
 The user can also set a list of emergency contacts to which, at the click of a button, send a text message with their latitude
 and longitude, requesting help.
+
 
 ## Technologies Used
 * Google Directions API
