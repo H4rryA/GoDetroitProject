@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html ng-app="ngMap">
+<head>
+<meta name="viewport"/>
+<script src="https://maps.google.com/maps/api/js?libraries=placeses,visualization,drawing,geometry,places"></script>
+<script src="https://code.angularjs.org/1.3.15/angular.js"></script>
+<script src="https://rawgit.com/allenhwkim/angularjs-google-maps/master/build/scripts/ng-map.js"></script>
+<style type="text/css">
+  html, body, #map {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  #floating-panel {
+        position: absolute;
+        top: 2.5%;
+        right: 2.5%;
+        /*z-index: 5;*/
+        /*padding: 5px;*/
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+  }
+</style>
+</head>
+
+<body>
+  <div>
+    <ng-map id="map" zoom="10" center="42.365073378104945, -83.07137716674805">
+      <fusion-tables-layer
+        query= "{ select: 'location',
+          from: '1zHCgMcx-VnSvSATgylPUvUidXih50QBHxP0lAGZP'}",
+          heatmap = "{enabled: true, radius: 30, opacity: 0.6}">
+      </fusion-tables-layer>
+    </ng-map>
+  </div>
+</body>
+</html>
